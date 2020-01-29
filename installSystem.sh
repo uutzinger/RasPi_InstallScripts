@@ -14,6 +14,7 @@ sudo sh install.sh
 
 # Conky
 #######
+# This section is optional
 cd ~
 sudo apt-get -y install conky-all
 wget -O /home/pi/.conkyrc https://raw.githubusercontent.com/novaspirit/rpi_conky/master/rpi3_conkyrc
@@ -36,6 +37,7 @@ sudo raspi-config
 # Setup video to create display even when no display is attached
 ################################################################
 # Configure for VNC even when no monitor is attached to system
+# This section is optional
 sudo nano /boot/config.txt
 add:
 hdmi_force_hotplug=1
@@ -75,8 +77,10 @@ sudo pip3 install cython
 sudo pip3 install "picamera[array]"
 sudo pip3 install imutils
 git clone https://github.com/jrosebr1/imutils.git
+# The next two lines are optional
 sudo pip3 install scipy
 sudo pip3 install scikit-image
+#
 sudo pip3 install dlib
 sudo pip3 install face_recognition
 sudo pip3 install zmq
@@ -106,6 +110,7 @@ git clone https://github.com/uutzinger/meArmPi.git
 # Java Development Environment
 # Open JDK 11
 ##############
+# This section is optional
 sudo apt-get -y install ant java-common
 sudo apt-get -y install openjdk-11-jdk
 sudo update-alternatives --config javac
@@ -118,6 +123,8 @@ export JAVA_HOME=/usr/lib/jvm/openjdk-11
 export PATH=${PATH}:$JAVA_HOME/bin
 
 # Camera Viewer
+###############
+# This section is optional
 sudo apt-get -y install cheese
 sudo apt-get -y install luvcview
 sudo apt-get -y install fswebcam
