@@ -11,7 +11,8 @@ sudo date -s “Tue Nov 1 10:38:00 MST 2016”
 ##############################################################
 #set hostname to the computer name you want e.g.  frcvision
 sudo hostnamectl set-hostname bme210_teamname
-
+sudo nano /etc/hosts
+# change raspberry to your new host name
 
 # 1) Install packages and apps beyond standard buster installation
 ##################################################################
