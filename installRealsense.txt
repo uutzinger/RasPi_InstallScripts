@@ -35,22 +35,21 @@ sudo dpkg -i ~/libtbb-dev_2019U5_armhf.deb
 sudo ldconfig
 rm libtbb-dev_2019U5_armhf.deb
 
-sudo apt autoremove libopencv3
-
-$ wget https://github.com/mt08xx/files/raw/master/opencv-rpi/libopencv3_3.4.3-20180907.1_armhf.deb
-$ sudo apt install -y ./libopencv3_3.4.3-20180907.1_armhf.deb
-$ sudo ldconfig
+# sudo apt autoremove libopencv4
+# wget https://github.com/mt08xx/files/raw/master/opencv-rpi/libopencv4xxxx_armhf.deb
+# sudo apt install -y ./libopencv4xxxx_armhf.deb
+#sudo ldconfig
 
 cd ~/librealsense
 mkdir  build  && cd build
 cmake .. -DBUILD_EXAMPLES=true -DCMAKE_BUILD_TYPE=Release -DFORCE_LIBUVC=true
-make -j1
+make -j4
 sudo make install
 
 cd ~/librealsense/build
 #cmake .. -DBUILD_PYTHON_BINDINGS=bool:true -DPYTHON_EXECUTABLE=$(which python)
 cmake .. -DBUILD_PYTHON_BINDINGS=bool:true -DPYTHON_EXECUTABLE=$(which python3)
-make -j1
+make -j4
 sudo make install
 
 nano ~/.bashrc
