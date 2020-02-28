@@ -105,7 +105,7 @@ sudo raspi-config
 ```
 Select
 ```
-"7.Advanced Options" - "A7 GL Driver" - "G2 GL (Fake KMS)"
+"8.Advanced Options" - "A7 GL Driver" - "G2 GL (Fake KMS)"
 ```
 
 ## Finish and Test
