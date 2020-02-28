@@ -50,8 +50,8 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D WITH_FFMPEG=OFF \
       -D WITH_GSTREAMER=ON \
       -D WITH_TBB=ON \
-	-D WITH_V4L=ON \
-	-D WITH_LIBV4L=ON \
+      -D WITH_V4L=ON \
+      -D WITH_LIBV4L=ON \
       -D WITH_EIGEN=ON \
       -D BUILD_TBB=ON \
       -D BUILD_JPEG=ON \
@@ -60,6 +60,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D BUILD_JAVA=ON \
       -D BUILD_SHARED_LIBS=ON \
       -D BUILD_opencv_python3=ON \
+      -D BUILD_opencv_java=ON \
       -D ENABLE_CXX11=ON \
       -D ENABLE_NEON=ON \
       -D ENABLE_VFPV3=ON \
@@ -86,11 +87,18 @@ If you like to inspect the make file
 cmake-gui ../
 ```
 
+// opencv-libs/now 4.1.1 armhf [installed,local]
+// opencv-python/now 4.1.1 armhf [installed,local]
+
+
 ## Compile and Install
 ```
 make -j3
 sudo make install
 sudo ldconfig
+```
+Work in progress: Java is no fully built
+```
 sudo cp -p lib/libopencv_java*.so "/usr/local/lib/"
 sudo mkdir -p /usr/local/java
 sudo cp -p bin/opencv-*.jar "/usr/local/java/"
