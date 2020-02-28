@@ -1,17 +1,24 @@
 # RasPi_InstallScripts
 Software Installation
 
-## installBasics.sh
+## installBasics.md
 This loads many standard libraries
 
-## isntallSystem.sh
+## installSystem.md
 This sets up desktop, python, java, I/O interface, VSCode-OSS
 
-## installOpenCV.sh
+## installOpenCV4.md
 Builds opencv
+
+## installRealSense.md
+Compile drivers for Intel RealSense cameras.
+
+## installWireGuard.md
+link to good installation instrucctions for WireGuard VPN
+
+## IOT Server 
+This shows IOT Stack and VPN installation
 
 ## installFRC.sh
 Installs FIRST robotics relevant tools and drivers
 
-## installWireGuard.txt
-link to good installation instrucctions for WireGuard VPN
