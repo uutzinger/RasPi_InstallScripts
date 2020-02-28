@@ -111,7 +111,7 @@ Select
 ## Finish and Test
 ```
 sudo reboot
-realsense-viewer
+~/librealsense/build/tools/realsense-viewer/realsense-viewer
 ```
 
 # sudo apt autoremove libopencv4
