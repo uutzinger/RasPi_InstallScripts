@@ -1,8 +1,7 @@
 # IOT Server
-
+https://github.com/gcgarner/IOTstack
 ## IOTStack
 ```
-curl -L ht
 git clone https://github.com/gcgarner/IOTstack.git ~/IOTstack
 cd ~/IOTstack
 ./menu.sh
