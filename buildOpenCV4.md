@@ -1,6 +1,11 @@
 # Build OpenCV
 Currently OpenCV 4 is not well supporterd by AllWPIlib and RobotPy
-
+You can check your currently installed cv2 options with:
+```
+python3
+import cv2
+print(cv2.getBuildInformation())
+```
 
 # Prepare
 Add symbolic link for cblas.h to /usr/include (required by OpenCV)
