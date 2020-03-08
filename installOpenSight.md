@@ -1,4 +1,6 @@
-# Install OpenSight
+# OpenSight
+
+## Install OpenSight
 From https://opensight-cv.github.io/quickstart/installation/
 
 ```
@@ -15,21 +17,7 @@ rm -rf /tmp/opsi/
 reboot
 ```
 
-This will install opensight and opensigh-server ins ystemd.
-You can enable or disable with:
-
-```
-sudo systemctl ensable opensight.service
-sudo systemctl ensable opensight-server.service
-```
-
-Or start and stop the service:
-```
-sudo systemctl start opensight.service
-sudo systemctl start opensight-server.service
-```
-
-https://www.raspberrypi.org/documentation/linux/usage/systemd.md
+This will install opensight and opensigh-server in systemd.
 
 Opensight has dependencies such as
 ```
@@ -39,23 +27,40 @@ sudo -H pip3 install httptools aiofiles Click fastapi h11 httptools Jinja2 Marku
 It also requires gstreamer, which should automatically be intalled with above install scrit.
 
 The shell interface wants to use user opsi which you create with
-
 ```
 sudo adduser opsi
 ```
-
-and passwored opensight. Then add user to sudo group.
-
+and passwored "opensight". Then add user to sudo group.
 ```
 sudo adduser opsi sudo
 ```
 
+## Start/Stop Service
+You can enable or disable the service with:
 
+```
+sudo systemctl ensable opensight.service
+sudo systemctl ensable opensight-server.service
+```
+
+You start and stop it with:
+```
+sudo systemctl start opensight.service
+sudo systemctl start opensight-server.service
+```
+
+## Ports
 Opensigh uses a few ports
 
 http://localhost or http://opsi.local or http://10.41.83.100 is regular webinterface
 main server is on port 80
 logs and console is at 5800
-h264 is at port 541
+h264 is at port 554
 
-gst-launch-1.0 playbin uri=rtsp://localhost:541/camera
+## Connecting the server
+The rtsp connection string is "rtsp://10.41.83.100:554/camera"
+
+When gstreamer is available you can connect to the camera with
+```
+gst-launch-1.0 playbin uri=rtsp://10.41.83.100:554/camera
+```
