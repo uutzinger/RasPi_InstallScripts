@@ -14,7 +14,7 @@ rm -rf /tmp/opsi/
 reboot
 ```
 
-This will install opensight and opensigh-server insystemd.
+This will install opensight and opensigh-server ins ystemd.
 You can enable/disable with:
 
 ```
