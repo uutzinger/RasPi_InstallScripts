@@ -9,17 +9,18 @@ url="$(curl https://api.github.com/repos/opensight-cv/packages/releases/latest |
 curl -LO $url
 mkdir -p packages
 tar xf opsi-packages-*.tar.gz -C packages
-sudo apt install -y ./packages/deps/*.deb
+suggests=$(dpkg-deb -I "/packages/deps/opensight_"*".deb" | grep Suggests | sed -e 's/ Suggests: //' -e 's/:.*$//g' -e 's/\n/ /g' -e 's/(/@/g' -e 's/)/@/g' -e 's/ @\([^@]*\)@//g' -e "s/,//g")
+sudo apt install -y ./packages/deps/*.deb $suggests
 rm -rf /tmp/opsi/
 reboot
 ```
 
-This will install opensight and opensigh-server insystemd.
-You can enable/disable with:
+This will install opensight and opensigh-server ins ystemd.
+You can enable or disable with:
 
 ```
-sudo systemctl disable opensight.service
-sudo systemctl disable opensight-server.service
+sudo systemctl ensable opensight.service
+sudo systemctl ensable opensight-server.service
 ```
 
 Or start and stop the service:
@@ -29,3 +30,11 @@ sudo systemctl start opensight-server.service
 ```
 
 https://www.raspberrypi.org/documentation/linux/usage/systemd.md
+
+Opensight has dependencies such as
+```
+sudo -H pip3 install httptools aiofiles Click fastapi h11 httptools Jinja2 MarkupSafe netifaces numpy pydantic python-multipart six starlette toposort uvicorn uvloop websockets imutils pynetworktables pystemd upgraded-engineer black isort requests
+
+sudo apt-get -y install gstreamer1.0-omx gstreamer1.0-omx-rpi gstreamer1.0-tools python3-gi python3-gpiozero python3-gst-1.0
+
+```
