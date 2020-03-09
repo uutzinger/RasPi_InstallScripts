@@ -64,3 +64,8 @@ When gstreamer is available you can connect to the camera with
 ```
 gst-launch-1.0 playbin uri=rtsp://10.41.83.100:554/camera
 ```
+
+You might want to change opsi/modules/videoio/h264.py
+
+command = split("gst-inspect-1.0 omxh264enc")
+command = split("gst-inspect-1.0 omxh264enc target-bitrate=1850000 control-rate=variable")
