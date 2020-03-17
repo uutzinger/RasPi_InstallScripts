@@ -18,6 +18,8 @@ Add your hostnmae to local host list
 sudo nano /etc/hosts
 ```
 
+If you conenct your raspberry with a wirex ethernet cable to your computer, you can establish a connections to hostname.local without needing to use a wireless accesspoint or configuring a network adapter. If you want your raspberry to connect to the world you will need a full network setup though (which you can do when connected to hostname.local via VNC). 
+
 ## Install packages and apps beyond standard installation
 
 ### Basics
