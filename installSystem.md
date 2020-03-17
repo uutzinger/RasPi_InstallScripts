@@ -22,6 +22,16 @@ wget -O /home/pi/.conkyrc https://raw.githubusercontent.com/novaspirit/rpi_conky
 ```
 Setup desktop to autostart conky. Work in progress
 ```
+sudo nano /usr/bin/conky.sh
+```
+add the following to the file
+```
+#!/bin/sh
+(sleep 4s && conky) &
+exit 0
+```
+then
+```
 sudo nano /etc/xdg/autostart/conky.desktop 
 ```
 add folliwing lines to the file
