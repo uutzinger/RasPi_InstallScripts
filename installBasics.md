@@ -22,13 +22,11 @@ sudo nano /etc/hosts
 
 ### Basics
 ```
-sudo apt-get -y install vim quilt qemu-user-static 
-sudo apt-get -y install zerofree pxz zip bsdtar
-sudo apt-get -y install cmake cmake-qt-gui 
+sudo apt-get -y install coreutils quilt qemu-user-static debootstrap grep rsync xz-utils
+sudo apt-get -y install zerofree pxz zip bsdtar parted gparted dosfstools file
+sudo apt-get -y install cmake cmake-qt-gui vim git curl jq gdbserver lua5.2
 sudo apt-get -y install daemontools daemontools-run
-sudo apt-get -y install gdbserver
-sudo apt-get -y install lua5.2
-sudo apt-get -y install libarchive-dev libcurl4-openssl-dev intltool
+sudo apt-get -y install libarchive-dev libcurl4-openssl-dev intltool libcap2-bin
 ```
 
 ### Get the video and image libraries
