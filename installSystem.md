@@ -49,8 +49,8 @@ Categories=Utility;
 ```
 sudo raspi-config
 ```
-*Enable Boot to Desktop, log in as user pi
-*Enable VNC, I2C, SPI, Camera
+* Enable Boot to Desktop, log in as user pi
+* Enable VNC, I2C, SPI, Camera
 
 ## Setup video to create display even when no display is attached
 Configure for VNC even when no monitor is attached to system
@@ -59,9 +59,9 @@ This section is optional
 sudo nano /boot/config.txt
 ```
 add:
-*hdmi_force_hotplug=1
-*hdmi_group=2
-*hdmi_mode=85
+* hdmi_force_hotplug=1
+* hdmi_group=2
+* hdmi_mode=85
 
 ## Visual Code 
 This editor needs more resouces than others but I still prefer and it works on RasPi
