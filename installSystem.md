@@ -63,6 +63,8 @@ add:
 * hdmi_group=2
 * hdmi_mode=85
 
+This gives you 720p. Mode 82 is supposed to give you 1080p but I have not been able to get 1080p output.
+
 ## Visual Code 
 This editor needs more resouces than others but I still prefer and it works on RasPi
 ```
