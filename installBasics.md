@@ -44,8 +44,7 @@ sudo apt-get -y install libfontconfig1-dev libcairo2-dev
 sudo apt-get -y install libgdk-pixbuf2.0-dev libpango1.0-dev
 ```
 
-###
-GTK 
+### GTK 
 ```
 sudo apt-get -y install libgtkmm-3.0-dev
 sudo apt-get -y install libgtk2.0-dev libgtk-3-dev
