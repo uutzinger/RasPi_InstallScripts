@@ -60,10 +60,10 @@ sudo nano /boot/config.txt
 ```
 add:
 * hdmi_force_hotplug=1
-* hdmi_group=2
-* hdmi_mode=85
+* hdmi_group=1
+* hdmi_mode=16
 
-This gives you 720p. Mode 82 is supposed to give you 1080p but I have not been able to get 1080p output.
+This gives you 720p or 1080p. I have not been able to get 1080p output.
 
 ## Visual Code 
 This editor needs more resouces than others but I still prefer and it works on RasPi
@@ -148,10 +148,13 @@ Update bash
 nano ~/.bashrc 
 ```
 add
-*export ANT_HOME=/usr/share/ant
-*export PATH=${PATH}:${ANT_HOME}/bin
-*export JAVA_HOME=/usr/lib/jvm/openjdk-11
-*export PATH=${PATH}:$JAVA_HOME/bin
+
+```
+export ANT_HOME=/usr/share/ant
+export PATH=${PATH}:${ANT_HOME}/bin
+export JAVA_HOME=/usr/lib/jvm/openjdk-11
+export PATH=${PATH}:$JAVA_HOME/bin
+```
 
 ## Camera Viewer
 Useful to test cameras.
