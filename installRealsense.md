@@ -59,7 +59,6 @@ sudo dpkg -i ~/libtbb-dev_2019U5_armhf.deb
 sudo ldconfig
 rm libtbb-dev_2019U5_armhf.deb
 ```
-
 ## Configure Lib RealSense
 
 ```
