@@ -165,8 +165,13 @@ sudo apt-get -y install fswebcam
 ```
 
 ## CMake
+```
+sudo apt-get install qt4-dev-tools
+sudo apt-get install qtcreator
+sudo apt-get install libssl-dev
 git clone https://gitlab.kitware.com/cmake/cmake.git
 cd cmake
-./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release
+./bootstrap --qt-gui -- -DCMAKE_BUILD_TYPE:STRING=Release 
 make -j3
 sudo make install
+```
