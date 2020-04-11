@@ -163,3 +163,10 @@ sudo apt-get -y install cheese
 sudo apt-get -y install luvcview
 sudo apt-get -y install fswebcam
 ```
+
+## CMake
+git clone https://gitlab.kitware.com/cmake/cmake.git
+cd cmake
+./bootstrap -- -DCMAKE_BUILD_TYPE:STRING=Release
+make -j3
+sudo make install
