@@ -43,7 +43,6 @@ These are suggested build options.
 ```
 mkdir build
 cd build
-these flags
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D WITH_FFMPEG=OFF \
       -D WITH_GSTREAMER=ON \
