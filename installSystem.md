@@ -132,7 +132,6 @@ sudo python3 setup.py install
 cd ..
 git clone https://github.com/uutzinger/meArmPi.git
 ```
-
 ## Java Development Environment
 Open JDK 11
 This section is needed if you want ot program in Java
@@ -148,14 +147,12 @@ Update bash
 nano ~/.bashrc 
 ```
 add
-
 ```
 export ANT_HOME=/usr/share/ant
 export PATH=${PATH}:${ANT_HOME}/bin
 export JAVA_HOME=/usr/lib/jvm/openjdk-11
 export PATH=${PATH}:$JAVA_HOME/bin
 ```
-
 ## Camera Viewer
 Useful to test cameras.
 ```
@@ -163,7 +160,14 @@ sudo apt-get -y install cheese
 sudo apt-get -y install luvcview
 sudo apt-get -y install fswebcam
 ```
-
+## Intel Thread Building Blocks
+```
+cd ~
+wget https://github.com/PINTO0309/TBBonARMv7/raw/master/libtbb-dev_2019U5_armhf.deb
+sudo dpkg -i ~/libtbb-dev_2019U5_armhf.deb
+sudo ldconfig
+rm libtbb-dev_2019U5_armhf.deb
+```
 ## CMake
 ```
 sudo apt-get install qt4-dev-tools
