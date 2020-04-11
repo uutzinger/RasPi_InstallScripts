@@ -1,12 +1,10 @@
 # Build OpenCV
-Currently OpenCV 4 is not well supporterd by AllWPIlib and RobotPy
 You can check your currently installed cv2 options with:
 ```
 python3
 import cv2
 print(cv2.getBuildInformation())
 ```
-
 # Prepare
 Add symbolic link for cblas.h to /usr/include (required by OpenCV)
 ```
@@ -14,7 +12,6 @@ cd ~
 sudo ln -sf /usr/include/arm-linux-gnueabihf/cblas.h /usr/include/cblas.h
 ```
 # Clone the Source
-
 ```
 wget -O opencv.zip https://github.com/opencv/opencv/archive/4.2.0.zip
 unzip opencv.zip
@@ -25,28 +22,24 @@ unzip opencv_contrib.zip
 rm opencv_contrib.zip
 mv opencv_contrib-4.2.0 opencv_contrib
 ```
-
 # Modify Code
 Disable extranous USB camera warnings
-
 ```
 cd ~/opencv
 sed -i -e '/JWRN_EXTRANEOUS_DATA/d' 3rdparty/libjpeg/jdmarker.c
 sed -i -e '/JWRN_EXTRANEOUS_DATA/d' 3rdparty/libjpeg-turbo/src/jdmarker.c
 ```
-
 Get a patch to add openblas, tbb  support and atomic compliler/linker option
-
 ```
 wget https://raw.githubusercontent.com/wpilibsuite/FRCVision-pi-gen/frcvision/stage3/01-sys-tweaks/files/opencv.patch
 patch -p0 < opencv.patch
 ```
-
 ## Build Opencv
 From https://www.learnopencv.com/install-opencv-4-on-raspberry-pi/
 
-This builkd uses TBB, NEON, VFPV3 for raspi optimization For 4.1.1 you need to add -latomic and precompiled headers off and c++11 standard with 
-
+This build uses TBB, NEON, VFPV3 for raspi optimization.
+For 4.x you need to add -latomic and precompiled headers off and c++11 standad.
+These are suggested build options.
 ```
 mkdir build
 cd build
