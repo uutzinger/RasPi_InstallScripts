@@ -112,8 +112,3 @@ Select
 sudo reboot
 ~/librealsense/build/tools/realsense-viewer/realsense-viewer
 ```
-
-# sudo apt autoremove libopencv4
-# wget https://github.com/mt08xx/files/raw/master/opencv-rpi/libopencv4xxxx_armhf.deb
-# sudo apt install -y ./libopencv4xxxx_armhf.deb
-#sudo ldconfig
