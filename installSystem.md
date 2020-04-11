@@ -107,7 +107,7 @@ sudo pip3 install face_recognition
 sudo pip3 install zmq
 ```
 ### Opencv
-If you dont want to compile openCV
+If you want to compile openCV follow the installOpenCV instrutions, otherwise use the following:
 ```
 sudo pip3 install opencv-contrib-python==4.1.0.25
 ```
@@ -133,8 +133,8 @@ cd ..
 git clone https://github.com/uutzinger/meArmPi.git
 ```
 ## Java Development Environment
-Open JDK 11
-This section is needed if you want ot program in Java
+Open JDK 11. 
+This section is needed if you want ot program in Java on the Raspberry Pi.
 ```
 sudo apt-get -y install ant java-common
 sudo apt-get -y install openjdk-11-jdk
@@ -154,13 +154,14 @@ export JAVA_HOME=/usr/lib/jvm/openjdk-11
 export PATH=${PATH}:$JAVA_HOME/bin
 ```
 ## Camera Viewer
-Useful to test cameras.
+Useful to test CSI and USB cameras.
 ```
 sudo apt-get -y install cheese
 sudo apt-get -y install luvcview
 sudo apt-get -y install fswebcam
 ```
 ## Intel Thread Building Blocks
+Other packages can be accelerated with tbb. The link below takes least amoun of time.
 ```
 cd ~
 wget https://github.com/PINTO0309/TBBonARMv7/raw/master/libtbb-dev_2019U5_armhf.deb
@@ -169,6 +170,7 @@ sudo ldconfig
 rm libtbb-dev_2019U5_armhf.deb
 ```
 ## CMake
+WHen you 
 ```
 sudo apt-get install qt5-default
 sudo apt-get install qtcreator
