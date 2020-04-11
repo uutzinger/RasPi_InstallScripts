@@ -58,6 +58,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D BUILD_SHARED_LIBS=ON \
       -D BUILD_opencv_python3=ON \
       -D BUILD_opencv_java=ON \
+      -D BUILD_NEW_PYTHON_SUPPORT=ON \
       -D ENABLE_CXX11=ON \
       -D ENABLE_NEON=ON \
       -D ENABLE_VFPV3=ON \
