@@ -170,7 +170,7 @@ rm libtbb-dev_2019U5_armhf.deb
 ```
 ## CMake
 ```
-sudo apt-get install qt4-dev-tools
+sudo apt-get install qt5-default
 sudo apt-get install qtcreator
 sudo apt-get install libssl-dev
 git clone https://gitlab.kitware.com/cmake/cmake.git
