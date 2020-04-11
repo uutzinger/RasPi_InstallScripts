@@ -91,11 +91,6 @@ If you like to inspect the make file
 ```
 cmake-gui ../
 ```
-
-// opencv-libs/now 4.1.1 armhf [installed,local]
-// opencv-python/now 4.1.1 armhf [installed,local]
-
-
 ## Compile and Install
 ```
 make -j3
