@@ -9,11 +9,16 @@ cd ~/IOTstack
 You will need Docker
 Then we can select modules to be installed.
 
-* Mosquito
-* log2ram
-* MQTT
+* Mosquitto mqtt (sensor messaging protocol)
+* Grafana (data collection and display)
+* Node-RED (automation)
+* Pi-Hole (DNS advertisement filter)
 
 ## PiVPN
 ```
 curl -L https://install.pivpn.io | bash
+```
+uninstall
+```
+pivpn -u
 ```
