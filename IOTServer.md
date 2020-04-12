@@ -7,14 +7,17 @@ cd ~/IOTstack
 ./menu.sh
 ```
 You will need Docker
-Then we can select modules to be installed.
+Then we can select modules to be installed. 
 
-* Mosquitto mqtt (sensor messaging protocol)
+* Portainer (docker management)
+* Eclipse-Mosquitto (mqtt sensor messaging protocol)
 * Grafana (data collection and display)
 * Node-RED (automation)
-* Pi-Hole (DNS advertisement filter)
+* InfluxDB (timeseries database)
+* Pi-Hole (DNS with advertisement filter)
 
 ## PiVPN
+Install if your router does not have VPN server builtin.
 ```
 curl -L https://install.pivpn.io | bash
 ```
