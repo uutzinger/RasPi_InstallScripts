@@ -83,6 +83,7 @@ sudo apt-get -y install python-pybind11
 sudo apt-get -y install libusb-1.0-0-dev
 sudo apt-get -y install swig
 sudo apt-get -y install gfortran
+sudo apt-get -y install python3-numpy python3-dev python3-pip python3-mock
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 sudo pip3 install --upgrade setuptools
