@@ -31,7 +31,7 @@ sudo apt-get -y install libarchive-dev libcurl4-openssl-dev intltool
 
 ### Get the video and image libraries
 ```
-sudo apt-get -y install libjpeg-dev libtiff-dev libtiff5-dev libjasper-dev
+sudo apt-get -y install libjpeg-dev libtiff-dev libtiff5-dev libjasper-dev libpng-dev
 sudo apt-get -y install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libavresample-dev
 sudo apt-get -y install libxvidcore-dev libx264-dev
 ```
