@@ -18,17 +18,15 @@ Add your hostnmae to local host list
 sudo nano /etc/hosts
 ```
 
-If you conenct your raspberry with a wirex ethernet cable to your computer, you can establish a connections to hostname.local without needing to use a wireless accesspoint or configuring a network adapter. If you want your raspberry to connect to the world you will need a full network setup though (which you can do when connected to hostname.local via VNC). 
+If you conenct your raspberry with a wired ethernet cable to your computer, you can establish a connections to hostname.local without needing to use a wireless accesspoint or configuring a network adapter. If you want your raspberry to connect to the world you will need a full network setup though (which you can do when connected to hostname.local via VNC). 
 
 ## Install packages and apps beyond standard installation
 
 ### Basics
 ```
-sudo apt-get -y install coreutils quilt qemu-user-static debootstrap grep rsync xz-utils
-sudo apt-get -y install zerofree pxz zip bsdtar parted gparted dosfstools file
-sudo apt-get -y install build-essential cmake cmake-qt-gui vim git curl jq gdbserver lua5.2 pkg-config
-sudo apt-get -y install daemontools daemontools-run
-sudo apt-get -y install libarchive-dev libcurl4-openssl-dev intltool libcap2-bin
+sudo apt-get -y install quilt zerofree pxz zip bsdtar gparted file
+sudo apt-get -y install cmake cmake-qt-gui vim jq lua5.3
+sudo apt-get -y install libarchive-dev libcurl4-openssl-dev intltool
 ```
 
 ### Get the video and image libraries
@@ -46,8 +44,7 @@ sudo apt-get -y install libgdk-pixbuf2.0-dev libpango1.0-dev
 
 ### GTK 
 ```
-sudo apt-get -y install libgtkmm-3.0-dev
-sudo apt-get -y install libgtk2.0-dev libgtk-3-dev
+sudo apt-get -y install libgtkmm-3.0-dev libgtk2.0-dev libgtk-3-dev
 sudo apt-get -y install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 sudo apt-get -y install libcanberra-gtk*
 sudo apt-get -y install libhdf5-dev
@@ -61,10 +58,8 @@ sudo apt-get -y install libqtwebkit4 libqt4-test
 
 ### Numerical computation packages
 ```
-sudo apt-get -y install libopenblas-dev liblapacke-dev
-sudo apt-get -y install libatlas-base-dev libblas-dev gfortran
+sudo apt-get -y install libopenblas-dev liblapack-dev libatlas-base-dev libblas-dev gfortran libeigen{2,3}-dev
 sudo apt-get -y install libboost-all-dev
-sudo apt-get -y install libeigen{2,3}-dev liblapack-dev
 ```
 
 ### Network
