@@ -24,7 +24,7 @@ If you conenct your raspberry with a wired ethernet cable to your computer, you 
 
 ### Basics
 ```
-sudo apt-get -y install quilt zerofree pxz zip bsdtar gparted file
+sudo apt-get -y install quilt zerofree pxz zip bsdtar gparted
 sudo apt-get -y install cmake cmake-qt-gui vim jq lua5.3
 sudo apt-get -y install libarchive-dev libcurl4-openssl-dev intltool
 ```
