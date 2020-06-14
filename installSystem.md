@@ -86,6 +86,8 @@ sudo apt-get -y install gfortran
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 sudo pip3 install --upgrade setuptools
+sudo pip3 install -U six wheel mock
+
 ```
 
 ### Python compiler, picamera, imutils
