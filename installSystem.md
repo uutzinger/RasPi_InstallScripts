@@ -171,8 +171,7 @@ sudo dpkg -i ~/libtbb-dev_2019U5_armhf.deb
 sudo ldconfig
 rm libtbb-dev_2019U5_armhf.deb
 ```
-## CMake
-WHen you 
+## Build your own CMake
 ```
 sudo apt-get install qt5-default
 sudo apt-get install qtcreator
