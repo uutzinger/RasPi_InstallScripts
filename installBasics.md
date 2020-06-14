@@ -61,6 +61,7 @@ sudo apt-get -y install libqtwebkit4 libqt4-test
 sudo apt-get -y install libopenblas-dev liblapack-dev libatlas-base-dev libblas-dev gfortran libeigen{2,3}-dev
 sudo apt-get -y install libboost-all-dev
 sudo apt-get -y install libc-ares-dev
+sudo apt-get -y install openmpi-bin libopenmpi-dev
 ```
 
 ### Network
