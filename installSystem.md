@@ -181,5 +181,6 @@ git clone https://gitlab.kitware.com/cmake/cmake.git
 cd cmake
 ./bootstrap --qt-gui -- -DCMAKE_BUILD_TYPE:STRING=Release 
 make -j3
+sudo apt remove cmake cmake-qt-gui
 sudo make install
 ```
