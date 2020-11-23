@@ -53,8 +53,8 @@ Only the latest kernel can boot from USB. Usually you dont want to use rpi-updat
 sudo apt install rpi-eeprom
 git clone https://github.com/raspberrypi/rpi-eeprom
 sudo cp rpi-eeprom/firmware/beta/* /lib/firmware/raspberrypi/bootloader/beta
-sudo cp rpi-eeprom/repi-eeprom-config /usr/bin
-sudo cp rpi-eeprom/repi-eeprom-update /usr/bin
+sudo cp rpi-eeprom/rpi-eeprom-config /usr/bin
+sudo cp rpi-eeprom/rpi-eeprom-update /usr/bin
 sudo nano /etc/default/rpi-eeprom-update
 ```
 replace critical with beta,ctrl-x and y  
