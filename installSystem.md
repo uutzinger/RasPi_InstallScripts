@@ -22,7 +22,7 @@ cd ~
 sudo apt-get -y install conky-all
 wget -O /home/pi/.conkyrc https://raw.githubusercontent.com/novaspirit/rpi_conky/master/rpi3_conkyrc
 ```
-Setup desktop to autostart conky. Work in progress
+Setup desktop to autostart conky.
 ```
 sudo nano /usr/bin/conky.sh
 ```
@@ -56,8 +56,8 @@ sudo raspi-config
 * Enable VNC, I2C, SPI, Camera
 
 ## Setup video to create display even when no display is attached
-BME210 optional
-Configure display resolution for VNC even when no monitor is attached to system
+BME210 optional  
+Configure display resolution for VNC when no monitor is attached to the system
 ```
 sudo nano /boot/config.txt
 ```
@@ -107,18 +107,21 @@ BME210 optional. It takes a long time
 sudo pip3 install scipy
 sudo pip3 install scikit-image
 ```
+
 BME210 optgional. These will provide adanced face detection  
 ```
 sudo pip3 install dlib
 sudo pip3 install face_recognition
 sudo pip3 install zmq
 ```
+
 ### Opencv
-You can compile openCV follow my installOpenCV instrutions.
-BME 210 and if you dont want to compile it use:  
+You can compile openCV and follow my installOpenCV instrutions.
+For BME 210 and if you dont want to compile it, use:  
 ```
 sudo pip3 install opencv-contrib-python==4.1.0.25
 ```
+
 ### I/O 
 Allow for digitial input output and its support tools
 ```
@@ -142,8 +145,7 @@ git clone https://github.com/uutzinger/meArmPi.git
 ```
 ## Java Development Environment
 BME 210 optional  
-Open JDK 11. 
-This section is needed if you want ot program in Java on the Raspberry Pi.
+This will install Open JDK 11 allowing you to program in Java on the Raspberry Pi.
 ```
 sudo apt-get -y install ant java-common
 sudo apt-get -y install openjdk-11-jdk
