@@ -1,4 +1,5 @@
 # Upgrade System
+If you have not done already  
 ```
 sudo apt-get update
 sudo apt-get dist-upgrade -y
@@ -15,6 +16,7 @@ sudo nano /etc/ztab
 ```
 
 ## Conky
+BME210 optional  
 ```
 cd ~
 sudo apt-get -y install conky-all
@@ -46,6 +48,7 @@ Categories=Utility;
 ```
 
 ## Configure Raspi interfaces
+If you have not done already:
 ```
 sudo raspi-config
 ```
@@ -53,8 +56,8 @@ sudo raspi-config
 * Enable VNC, I2C, SPI, Camera
 
 ## Setup video to create display even when no display is attached
-Configure for VNC even when no monitor is attached to system
-This section is optional
+BME210 optional
+Configure display resolution for VNC even when no monitor is attached to system
 ```
 sudo nano /boot/config.txt
 ```
@@ -63,7 +66,7 @@ add:
 * hdmi_group=1
 * hdmi_mode=16
 
-This gives you 720p or 1080p. I have not been able to get 1080p output.
+This gives you 720p or 1080p.
 
 ## Visual Code 
 This editor needs more resouces than others but I still prefer and it works on RasPi
@@ -98,19 +101,21 @@ sudo pip3 install "picamera[array]"
 sudo pip3 install imutils
 git clone https://github.com/jrosebr1/imutils.git
 ```
-This is optional. It takes a long time
+
+BME210 optional. It takes a long time  
 ```
 sudo pip3 install scipy
 sudo pip3 install scikit-image
 ```
-These will provide adanced face detection
+BME210 optgional. These will provide adanced face detection  
 ```
 sudo pip3 install dlib
 sudo pip3 install face_recognition
 sudo pip3 install zmq
 ```
 ### Opencv
-If you want to compile openCV follow the installOpenCV instrutions, otherwise use the following:
+You can compile openCV follow my installOpenCV instrutions.
+BME 210 and if you dont want to compile it use:  
 ```
 sudo pip3 install opencv-contrib-python==4.1.0.25
 ```
@@ -136,6 +141,7 @@ cd ..
 git clone https://github.com/uutzinger/meArmPi.git
 ```
 ## Java Development Environment
+BME 210 optional  
 Open JDK 11. 
 This section is needed if you want ot program in Java on the Raspberry Pi.
 ```
@@ -164,6 +170,7 @@ sudo apt-get -y install luvcview
 sudo apt-get -y install fswebcam
 ```
 ## Intel Thread Building Blocks
+BME210 optional  
 Other packages can be accelerated with tbb. The link below takes least amoun of time.
 ```
 cd ~
@@ -173,6 +180,7 @@ sudo ldconfig
 rm libtbb-dev_2019U5_armhf.deb
 ```
 ## Build your own CMake
+BME 210 optional
 ```
 sudo apt-get install qt5-default
 sudo apt-get install qtcreator
