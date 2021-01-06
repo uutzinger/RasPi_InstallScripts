@@ -16,6 +16,7 @@ If you conenct your raspberry with a wired ethernet cable to your computer, you 
 ## Install packages and apps beyond standard installation
 
 ### Basics
+BME210 optional:
 ```
 sudo apt-get -y install quilt zerofree pxz zip bsdtar gparted
 sudo apt-get -y install cmake cmake-qt-gui vim jq lua5.3
@@ -30,9 +31,16 @@ sudo apt-get -y install libxvidcore-dev libx264-dev
 ```
 
 ### More
+BME210 optional  
 ```
 sudo apt-get -y install libfontconfig1-dev libcairo2-dev
 sudo apt-get -y install libgdk-pixbuf2.0-dev libpango1.0-dev
+```
+
+### HDF5 data storage
+BME210 optional  
+```
+sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libhdf5-100
 ```
 
 ### GTK 
@@ -40,24 +48,27 @@ sudo apt-get -y install libgdk-pixbuf2.0-dev libpango1.0-dev
 sudo apt-get -y install libgtkmm-3.0-dev libgtk2.0-dev libgtk-3-dev
 sudo apt-get -y install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 sudo apt-get -y install libcanberra-gtk*
-sudo apt-get -y install libhdf5-dev
 ```
 
 ### QT
 ```
 sudo apt-get -y install python3-pyqt5
-sudo apt-get -y install libqtwebkit4 libqt4-test
+sudo apt-get -y install libqtgui4 libqtwebkit4 libqt4-test
 ```
 
 ### Numerical computation packages
 ```
 sudo apt-get -y install libopenblas-dev liblapack-dev libatlas-base-dev libblas-dev gfortran libeigen{2,3}-dev
+```
+BME210 optional  
+```
 sudo apt-get -y install libboost-all-dev
 sudo apt-get -y install libc-ares-dev
 sudo apt-get -y install openmpi-bin libopenmpi-dev
 ```
 
 ### Network
+BME210 optional  
 ```
 sudo apt-get -y install libldap2-dev
 ```
