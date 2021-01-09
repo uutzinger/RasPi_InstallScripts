@@ -10,7 +10,7 @@ git clone https://github.com/StuartIanNaylor/zram-config
 cd zram-config
 sudo sh install.sh
 ```
-if necessary modify the settings
+Its usually not necessary to modify the zram settings
 ```
 sudo nano /etc/ztab
 ```
@@ -56,7 +56,7 @@ sudo raspi-config
 * Enable VNC, I2C, SPI, Camera
 
 ## Setup video to create display even when no display is attached
-BME210 optional  
+If you have not done already:  
 Configure display resolution for VNC when no monitor is attached to the system
 ```
 sudo nano /boot/config.txt
@@ -66,10 +66,10 @@ add:
 * hdmi_group=1
 * hdmi_mode=16
 
-This gives you 720p or 1080p.
+This gives you 1080p. Mode 4 gives 720p.
 
 ## Visual Code 
-This editor needs more resouces than others but I still prefer and it works on RasPi
+Visual studio code needs more resouces than other editors but I still prefer it on RasPi. 
 ```
 wget https://packagecloud.io/headmelted/codebuilds/gpgkey
 sudo apt-key add gpgkey
@@ -102,13 +102,13 @@ sudo pip3 install imutils
 git clone https://github.com/jrosebr1/imutils.git
 ```
 
-BME210 optional. It takes a long time  
+BME210 optional. This takes a long time  
 ```
 sudo pip3 install scipy
 sudo pip3 install scikit-image
 ```
 
-BME210 optgional. These will provide adanced face detection  
+BME210 optgional. These will provide advanced face detection  
 ```
 sudo pip3 install dlib
 sudo pip3 install face_recognition
@@ -172,8 +172,8 @@ sudo apt-get -y install luvcview
 sudo apt-get -y install fswebcam
 ```
 ## Intel Thread Building Blocks
-BME210 optional  
-Other packages can be accelerated with tbb. The link below takes least amoun of time.
+BME210 optional
+Other packages can be accelerated with tbb. The link below takes least amoun of time for installation.
 ```
 cd ~
 wget https://github.com/PINTO0309/TBBonARMv7/raw/master/libtbb-dev_2019U5_armhf.deb
