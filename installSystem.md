@@ -69,20 +69,16 @@ add:
 This gives you 1080p. Mode 4 gives 720p.
 
 ## Visual Code 
-Visual studio code needs more resouces than other editors but I still prefer it on RasPi. 
-```
-wget https://packagecloud.io/headmelted/codebuilds/gpgkey
-sudo apt-key add gpgkey
-sudo -s
-. <( wget -O - https://code.headmelted.com/installers/apt.sh )
-exit
-```
+Visual studio code needs more resouces than other editors but I still prefer it on RasPi. The binaries are available at Microsoft: 
+https://code.visualstudio.com/#alt-downloads
+Download the ARM debian version. Raspian is not 64bit operating system.  
+Use the file explorerer and navigate to the Downloads folder and execute the downloaded_file.deb.  
+Let the installation complete.  
 
 ## Python
 ```
 cd ~
 sudo apt-get -y install python3-pybind11
-sudo apt-get -y install python-pybind11
 sudo apt-get -y install libusb-1.0-0-dev
 sudo apt-get -y install swig
 sudo apt-get -y install gfortran
