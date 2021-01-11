@@ -38,7 +38,6 @@ sudo apt-get -y install libgdk-pixbuf2.0-dev libpango1.0-dev
 ```
 
 ### HDF5 data storage
-BME210 optional  
 ```
 sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libhdf5-100
 ```
