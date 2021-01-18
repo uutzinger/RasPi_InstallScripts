@@ -8,7 +8,7 @@ sudo apt-get dist-upgrade -y
 ```
 git clone https://github.com/StuartIanNaylor/zram-config
 cd zram-config
-sudo sh install.sh
+sudo sh install.bash
 ```
 Its usually not necessary to modify the zram settings
 ```
@@ -180,9 +180,9 @@ rm libtbb-dev_2019U5_armhf.deb
 ## Build your own CMake
 BME 210 optional
 ```
-sudo apt-get install qt5-default
-sudo apt-get install qtcreator
-sudo apt-get install libssl-dev
+sudo apt-get -y install qt5-default
+sudo apt-get -y install qtcreator
+sudo apt-get -y install libssl-dev
 git clone https://gitlab.kitware.com/cmake/cmake.git
 cd cmake
 ./bootstrap --qt-gui -- -DCMAKE_BUILD_TYPE:STRING=Release 
