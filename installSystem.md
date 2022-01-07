@@ -71,7 +71,7 @@ This gives you 1080p. Mode 4 gives 720p.
 ## Visual Code 
 Visual studio code needs more resouces than other editors but I still prefer it on RasPi. The binaries are available at Microsoft: 
 https://code.visualstudio.com/#alt-downloads
-Download the ARM debian version. Raspian is not 64bit operating system.  
+Download the ARM debian version. Raspian is 32bit operating system. ARM64 will not work.  
 Use the file explorerer and navigate to the Downloads folder and execute the downloaded_file.deb.  
 Let the installation complete.  
 
@@ -113,6 +113,7 @@ sudo pip3 install zmq
 
 ### Opencv
 You can compile openCV and follow my installOpenCV instrutions.
+
 For BME 210 and if you dont want to compile it, use:  
 ```
 sudo pip3 install opencv-contrib-python==4.1.0.25
