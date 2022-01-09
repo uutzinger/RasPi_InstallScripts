@@ -11,9 +11,9 @@ own_window_type = 'normal',
 own_window_transparent = true,
 own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
 double_buffer = true,
-minimum_width = 150,
+minimum_width = 100,
 minimum_height = 5,
-maximum_width = 300,
+maximum_width = 250,
 draw_shades = false,
 draw_outline = false,
 draw_borders = false,
@@ -60,8 +60,6 @@ $swapbar
 ${font Arial:bold:size=10}${color #00AAFF}SDCard ${color #0000AA}${hr 2}
 $font${color #505050}/home $alignc ${color #AAAAAA}${fs_used /home} / ${fs_size /home}${color #505050} $alignr ${fs_free_perc /home}%
 ${fs_bar /home}
-
-${font Arial:bold:size=10}${color #00AAFF}Weather${color #AAAAAA} ${execi 300 /home/pi/weather.sh 37058}
 
 ${font Arial:bold:size=10}${color #00AAFF}TOP PROCESSES ${color #0000AA}${hr 2}
 ${color #505050}$font${top_mem name 2}${alignr}${top mem 2} %
