@@ -20,7 +20,7 @@ BME210 optional
 ```
 cd ~
 sudo apt-get -y install conky-all
-wget -O /home/pi/.conkyrc https://github.com/jeffskinnerbox/.conky/blob/master/src/raspberry_pi-conkyrc
+wget -O /home/pi/.conkyrc https://github.com/uutzinger/RasPi_InstallScripts/blob/master/conkyrc
 ```
 Setup desktop to autostart conky.
 ```
