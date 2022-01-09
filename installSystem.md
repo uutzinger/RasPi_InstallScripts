@@ -20,7 +20,7 @@ BME210 optional
 ```
 cd ~
 sudo apt-get -y install conky-all
-wget -O /home/pi/.conkyrc https://github.com/jeffskinnerbox/.conky/blob/master/src/raspberry_pi-conkyrc
+wget -O /home/pi/.conkyrc https://raw.githubusercontent.com/novaspirit/rpi_conky/master/rpi3_conkyrc
 ```
 Setup desktop to autostart conky.
 ```
@@ -78,17 +78,16 @@ Let the installation complete.
 ## Python
 ```
 cd ~
+sudo apt-get -y install python3-dev
 sudo apt-get -y install python3-pybind11
 sudo apt-get -y install libusb-1.0-0-dev
 sudo apt-get -y install swig
 sudo apt-get -y install gfortran
-sudo apt-get -y install python3-numpy python3-dev python3-pip python3-mock
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 sudo pip3 install -U setuptools
 sudo pip3 install -U six wheel mock
 sudo pip3 install -U numpy
-
 ```
 
 ### Python compiler, picamera, imutils
@@ -117,7 +116,7 @@ You can compile openCV and follow my installOpenCV instrutions.
 
 For BME 210 and if you dont want to compile it, use:  
 ```
-sudo pip3 install opencv-contrib-python==4.5.3.56
+sudo pip3 install opencv-contrib-python==4.1.0.25
 ```
 
 ### I/O 
