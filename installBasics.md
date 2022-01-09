@@ -39,7 +39,7 @@ sudo apt-get -y install libgdk-pixbuf2.0-dev libpango1.0-dev
 
 ### HDF5 data storage
 ```
-sudo apt-get -y install libhdf5-dev libhdf5-serial-dev
+sudo apt-get -y install libhdf5-dev libhdf5-serial-dev libhdf5-103
 ```
 
 ### GTK 
@@ -52,7 +52,7 @@ sudo apt-get -y install libcanberra-gtk*
 ### QT
 ```
 sudo apt-get -y install python3-pyqt5
-sudo apt-get -y install libqtgui4 libqtwebkit4 libqt4-test
+sudo apt-get -y install libqt5gui5 libqt5webkit5 libqt5test5 python3-pyqt5
 ```
 
 ### Numerical computation packages
