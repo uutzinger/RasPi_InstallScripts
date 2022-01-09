@@ -20,7 +20,7 @@ BME210 optional
 ```
 cd ~
 sudo apt-get -y install conky-all
-wget -O /home/pi/.conkyrc https://raw.githubusercontent.com/novaspirit/rpi_conky/master/rpi3_conkyrc
+wget -O /home/pi/.conkyrc https://github.com/jeffskinnerbox/.conky/blob/master/src/raspberry_pi-conkyrc
 ```
 Setup desktop to autostart conky.
 ```
@@ -116,7 +116,7 @@ You can compile openCV and follow my installOpenCV instrutions.
 
 For BME 210 and if you dont want to compile it, use:  
 ```
-sudo pip3 install opencv-contrib-python==4.1.0.25
+sudo pip3 install opencv-contrib-python==4.5.3.56
 ```
 
 ### I/O 
