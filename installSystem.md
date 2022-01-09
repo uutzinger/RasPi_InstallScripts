@@ -78,7 +78,6 @@ Let the installation complete.
 ## Python
 ```
 cd ~
-sudo apt-get -y install python3-dev
 sudo apt-get -y install python3-pybind11
 sudo apt-get -y install libusb-1.0-0-dev
 sudo apt-get -y install swig
@@ -86,8 +85,9 @@ sudo apt-get -y install gfortran
 sudo apt-get -y install python3-numpy python3-dev python3-pip python3-mock
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
-sudo pip3 install --upgrade setuptools
+sudo pip3 install -U setuptools
 sudo pip3 install -U six wheel mock
+sudo pip3 install -U numpy
 
 ```
 
@@ -117,7 +117,7 @@ You can compile openCV and follow my installOpenCV instrutions.
 
 For BME 210 and if you dont want to compile it, use:  
 ```
-sudo pip3 install opencv-contrib-python==4.1.0.25
+sudo pip3 install opencv-contrib-python==4.5.3.56
 ```
 
 ### I/O 
