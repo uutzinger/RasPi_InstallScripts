@@ -78,6 +78,7 @@ Let the installation complete.
 ## Python
 ```
 cd ~
+sudo apt-get -y install python3-dev
 sudo apt-get -y install python3-pybind11
 sudo apt-get -y install libusb-1.0-0-dev
 sudo apt-get -y install swig
