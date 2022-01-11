@@ -56,17 +56,7 @@ sudo raspi-config
 * Enable VNC, I2C, SPI, Camera
 
 ## Setup video to create display even when no display is attached
-If you have not done already:  
-Configure display resolution for VNC when no monitor is attached to the system
-```
-sudo nano /boot/config.txt
-```
-add:
-* hdmi_force_hotplug=1
-* hdmi_group=1
-* hdmi_mode=16
-
-This gives you 1080p. Mode 4 gives 720p.
+This has changed in bullseye version and you should attempt raspi-config instead of editing /boot/config.txt.
 
 ## Visual Code 
 Visual studio code needs more resouces than other editors but I still prefer it on RasPi. The binaries are available at Microsoft: 
