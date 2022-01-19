@@ -6,9 +6,9 @@ sudo apt-get dist-upgrade -y
 ```
 ## Zram
 ```
-git clone https://github.com/StuartIanNaylor/zram-config
+git clone https://github.com/ecdye/zram-config
 cd zram-config
-sudo sh install.bash
+sudo ./install.bash
 ```
 Its usually not necessary to modify the zram settings
 ```
