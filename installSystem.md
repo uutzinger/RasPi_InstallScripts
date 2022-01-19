@@ -73,8 +73,7 @@ sudo apt-get -y install python3-pybind11
 sudo apt-get -y install libusb-1.0-0-dev
 sudo apt-get -y install swig
 sudo apt-get -y install gfortran
-wget https://bootstrap.pypa.io/get-pip.py
-sudo python3 get-pip.py
+sudo apt-get -y install python3-pip
 sudo pip3 install -U setuptools
 sudo pip3 install -U six wheel mock
 sudo pip3 install -U numpy
@@ -94,7 +93,7 @@ sudo pip3 install scipy
 sudo pip3 install scikit-image
 ```
 
-BME210 optgional. These will provide advanced face detection  
+BME210 optional. These will provide advanced face detection  
 ```
 sudo pip3 install dlib
 sudo pip3 install face_recognition
