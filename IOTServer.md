@@ -5,24 +5,38 @@
   * [Turn off WiFi and BT](#turn-off-wifi-and-bt)
   * [Boot from USB](#boot-from-usb)
   * [IOTStack](#iotstack)
-    + [Configuration](#configuration)
-    + [Acccessing Shell inside Docker Container](#acccessing-shell-inside-docker-container)
+    + [Accessing Docker Stacks](#accessing-docker-stacks)
+    + [Usernames and Passwords](#usernames-and-passwords)
+    + [Acccessing Shell inside a Docker Container](#acccessing-shell-inside-a-docker-container)
     + [Updating Containers](#updating-containers)
     + [Backing Up to Google Drive](#backing-up-to-google-drive)
+- [Configuring IOT Server](#configuring-iot-server)
+  * [Resources for setting up IOT Server](#resources-for-setting-up-iot-server)
+  * [Configure Portainer](#configure-portainer)
+    + [Forgotten Portainer Password](#forgotten-portainer-password)
   * [Configure Mosquitto](#configure-mosquitto)
-  * [Configure influxDB](#configure-influxdb)
+    + [Setting Password](#setting-password)
+  * [Configure influxDB port:8086](#configure-influxdb-port-8086)
+    + [Change the indluxdb environment](#change-the-indluxdb-environment)
+  * [Configure Node-RED port 1880](#configure-node-red-port-1880)
+    + [To access the GPIO pins on the RasPi](#to-access-the-gpio-pins-on-the-raspi)
+    + [Enable Bluetooth Access](#enable-bluetooth-access)
+    + [Running exec node on host RasPi](#running-exec-node-on-host-raspi)
+    + [Securing Node-red](#securing-node-red)
   * [Configure Grafana](#configure-grafana)
+    + [Set Password](#set-password)
+  * [Configure wireguard](#configure-wireguard)
+- [Other IOT Webservices](#other-iot-webservices)
   * [motionEye](#motioneye)
-  * [piHole, VPN and DHCP](#pihole--vpn-and-dhcp)
-    + [Router OpenWRT](#router-openwrt)
+  * [piHole, VPN and DHCP (without IOT server and docker)](#pihole--vpn-and-dhcp--without-iot-server-and-docker-)
+    + [Router Firmware: OpenWRT](#router-firmware--openwrt)
+    + [Force DNS Lookup to PiHole](#force-dns-lookup-to-pihole)
     + [DHCP Static Configuration](#dhcp-static-configuration)
       - [DynDNS](#dyndns)
       - [openDNS update registered IP with openWRT](#opendns-update-registered-ip-with-openwrt)
       - [FireWall Port Forwards](#firewall-port-forwards)
     + [PiHole](#pihole)
     + [PiVPN](#pivpn)
-      - [WireGuard](#wireguard)
-      - [OpenVPN](#openvpn)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -30,7 +44,9 @@
 
 ## Turn off WiFi and BT
 
-```sudo nano /boot/config.txt```
+```
+sudo nano /boot/config.txt
+```
 
 ```
 dtoverlay=disable-wifi
@@ -38,79 +54,84 @@ dtoverlay=disable-bt
 ```
 
 ## Boot from USB
-This might only work on RasPi 4. This script follows Andreas Spiess youtbe video.  
+This might only work on RasPi 4.  
 Install latest Raspian on a SD Card using rufus or etcher.  
-Install same image using rufus on SSD.  
-Boot and
+
+Boot and:
 ```
 sudo apt update
-sudo apt ugrade
+sudo apt full-ugrade
 sudo rpi-update
 sudo reboot
 ```
-Only the latest kernel can boot from USB. Usually you dont want to use rpi-update as the warning clearly state that this process is not intentended for regular users.  
+
 ```
-sudo apt install rpi-eeprom
-git clone https://github.com/raspberrypi/rpi-eeprom
-sudo cp rpi-eeprom/firmware/beta/* /lib/firmware/raspberrypi/bootloader/beta
-sudo cp rpi-eeprom/rpi-eeprom-config /usr/bin
-sudo cp rpi-eeprom/rpi-eeprom-update /usr/bin
-sudo nano /etc/default/rpi-eeprom-update
-```
-replace critical with beta,ctrl-x and y  
-```
-sudo rpi-eeprom-update -d -f /lib/firmware/raspberrypi/bootloader/beta/pieeprom-2020-06-15.bin
+sudo rpi-eeprom-update -d -a
 sudo reboot
 ```
+Copy the content of the SDCard to the USB driver using SD Card Copier in Raspian.
 
-After reboot is completed attach SSD to USB port.
+Then configure USB boot:
 ```
-vcgencmd bootloader_version
-sudo mkdir /mnt/USBdisk
-sudo mount /dev/sda1 /mnt/USBdisk
-sudo cp /boot/*.elf /mnt/USBdisk
-sudo cp /boot/*.dat /mnt/USBdisk
+sudo raspi-config
 ```
+In "advanced" you can enable boot device and firmware options.
 
-Reboot with SD card removed and SSD plugged in. Then
-```
-sudo apt update
-sudo apt ugrade
-```
-and complete all the system installations you might want on your IOT server.
-
+----
 ## IOTStack
-https://github.com/gcgarner/IOTstack
 
 ```
-git clone https://github.com/gcgarner/IOTstack.git ~/IOTstack
+sudo apt install -y curl
+```
+
+Install with:
+```
+curl -fsSL https://raw.githubusercontent.com/SensorsIot/IOTstack/master/install.sh |   bash
 cd ~/IOTstack
 ./menu.sh
 ```
-You will need Docker
-Then we can select modules to be installed. 
 
-* Portainer (docker management)
+You will need Docker installed first from the mensu.sh.   
+
+Then we can select modules to be installed:
+
+Select "Build Stack" in menu.sh
+
+* Portainer-ce (docker management)
 * Eclipse-Mosquitto (mqtt sensor messaging protocol)
 * Grafana (data collection and display)
 * Node-RED (automation)
 * InfluxDB (timeseries database)
 
-You will not want motionEye running on the IOT server.
-motionEye with 3 1080p rtsp streams will take 75-100% CPU time.
+You will not want motionEye running on the IOT server.  
+motionEye with three 1080p rtsp streams will consume 75-100% CPU time.
+
+Recommended system patches:
 
 ```
-cd ~/IOTstack
-docker-composer up -d
+sudo bash -c '[ $(egrep -c "^allowinterfaces eth0,wlan0" /etc/dhcpcd.conf) -eq 0 ] && echo "allowinterfaces eth0,wlan0" >> /etc/dhcpcd.conf'
+sudo reboot
 ```
+
+Bring up docker:
+```
+cd ~/IOTstack
+docker-compose up -d
+```
+
+You can check the logs:
+```
+docker logs wireguard
+````
+
 ### Accessing Docker Stacks
 
 nodered https://localhost:1880  
 influxdb https://localhost:8086  
 grafana https://localhost:3000  
 motionEye: https://localhost:8765  
-portainer: https://localhost:9000
-telegraf
+portainer: https://localhost:9000   
+telegraf: 
 
 ### Usernames and Passwords
 Keep track of the user names and passwords you create:
@@ -119,7 +140,8 @@ Portainer Web Access: admin
 Influxdb Administrator: pi  
 Indluxdb User: mqtt  
 Mosquitto User: mqtt  
-Node-red: admin and user  
+Node-red: admin and user 
+Grafana: admin
 
 ### Acccessing Shell inside a Docker Container
 Example influxdb:  
@@ -139,10 +161,12 @@ select /bin/sh
 ### Updating Containers
 ```
 ./scripts/update.sh
+```
 or
+```
 docker-compose down
- docker-compose pull
-docker-compose up
+docker-compose pull
+docker-compose up -d
 ```
 ### Backing Up to Google Drive
 
@@ -161,8 +185,8 @@ access to files created by rdrive only
 root folder id: empty
 sercvice account files: empty
 advanced config: no
-autoconfig: yes (the follow the authentication requests in the browser)
-tean drive: no
+autoconfig: yes (then follow the authentication requests in the browser)
+team drive: no
 ok: yes
 ```
 
@@ -172,44 +196,75 @@ cd ~/IOTstack
 sudo touch backups/rclone
 nano ~/IOTstack/scripts/docker_backup.sh
 ```
-Enable backup script    
+Enable backup script
 ```
 crontab -e
 * 23 * * * sudo ~/IOTstack/scripts/docker_backup.sh >/dev/null 2>&1
 ```
 
-## Configure Portainer
-Open portainer in webbrowser  
-Set initial password
+# Configuring IOT Server
 
-Select "endpoints" symbol and set PublicIP to the IP of the machine running docker  
+## Resources for setting up IOT Server
+
+Documentation is:
+* https://sensorsiot.github.io/IOTstack/Containers/Portainer-ce/   
+
+Examples are:  
+* https://griddb.net/en/blog/monitoring-temperature-sensor-data-with-an-arduino-based-plc-mqtt-node-red-griddb-and-grafana/
+* https://www.sensorsiot.org/node-red-infuxdb-grafana-installation/
+
+## Configure Portainer
+Open portainer in webbrowser:  ```https://yourIOTstackIP:9000```  
+Set initial password.
+Select Home and local container  
+Select "endpoints" symbol and set PublicIP of local container to the IP of the machine running docker which is autopopulated.
 
 ### Forgotten Portainer Password
 on the pi: ```sudo rm -r ./volumes/portainer``` start the stack and access portainer
 
 ## Configure Mosquitto
+
+There is documentation at https://sensorsiot.github.io/IOTstack/Containers/Mosquitto/.
+
+In general the files of interest are:
+* docker-compose.yml ⇒ ~/IOTstack/docker-compose.yml
+* mosquitto.conf ⇒ ~/IOTstack/services/mosquitto/mosquitto.conf
+* mosquitto.log ⇒ ~/IOTstack/volumes/mosquitto/log/mosquitto.log
+* service.yml ⇒ ~/IOTstack/.templates/mosquitto/service.yml
+* volumes/mosquitto ⇒ ~/IOTstack/volumes/mosquitto/
+
 ```
 cd ~/IOTstack/services/mosquitto
 nano mosquitto.conf
-add allow_anonymous true
+allow_anonymous true
 ```
+
+If you plan to use passwords
+```
+passwordfile /mosquitto/pwfile/pwfile
+allow_anonymous false
+```
+Mosquitto port is by default 1883.
 
 ### Setting Password  
-```
-mosquitto_passwd -c /mosquitto/config/pwfile yourmosquittousername
-```
+Mosquitto runs without passoword by default but you might want to change that. 
 
-### Change the mosquitto environment  
-```
-nano ~IOTstack/services/mosquitto/mosquitto.conf
-```
-Enable password file  
+If you use a username and password you will need to add ```mqttClient.setCredentials(username, password)``` in your esp8266 sketch to connect to the mqtt broker.
 
-## Configure influxDB
+execute 
+```
+~/IOTstack/services/mosquitto/terminal.sh
+```
+enter following command with substituted username:
+```
+mosquitto_passwd -c /mosquitto/pwfile/pwfile yourmosquittousername
+```
+enter the password and ```exit``` the shell
 
-Connect to portainer http://yourIOTstackIP:9000/
-Select Containers then indluxdb
-Start console
+## Configure influxDB port:8086
+
+Start console ``` run ./services/influxdb/terminal.sh ```
+
 ```
 influx
 CREATE DATABASE airquality
@@ -220,34 +275,52 @@ GRANT ALL ON airquality TO mqtt
 ```
 
 ### Change the indluxdb environment   
+Influxdb environment is stored in ```~/IOTstack/services/influxdb/influxdb.env```
+
 ```
-nano ~IOTstack/services/influxdb/influxdb.env
+nano ~/IOTstack/services/influxdb/influxdb.env
+# add this one to beginning
 INFLUXDB_DB=airquality
+# enable this 
 INFLUXDB_HTTP_AUTH_ENABLE=true
-INFLUXDB_
-INFLUXDB_ADMIN_USER=pi
-INFLUXDB_ADMIN_PASSORD=yourpassword
-INFLUXDB_USER=mqtt
-INFLUXDB_USER_PASSWORD=anotherpassword
+# set users
+INFLUX_USERNAME=admin
+INFLUX_PASSWORD=anotherpassword
 ```
-## Configure Node-red
+
+## Configure Node-RED port 1880
+
+You might want to consider enabling your GPIO pins and bluetoot to become accessible inside Node-RED container.
 
 ### To access the GPIO pins on the RasPi  
 ```
 sudo apt-get install pigpio python-pigpio python3-pigpio
 ```
-Edit ```/etc/rc.local``` add ```/usr/bin/pigpiod``` before ```exit 0``` 
+Edit ```/etc/rc.local``` and add 
+```
+/usr/bin/pigpiod
+``` 
+before ```exit 0```  
 Then execute
-```sudo /usr/bin/pigpiod -l```
+```
+sudo /usr/bin/pigpiod -l
+```
 
 Open shell in portainer node-red stack and install the node:
-```npm install node-red-node-pi-gpiod```
+```
+npm install node-red-node-pi-gpiod
+```
 
 Now in the webinterface there should be a Raspberry Pi section in the node list.
 
 ### Enable Bluetooth Access
-nano ~/IOTstack/services/nodered/service.yml  
-add ```network_mode: "host"```  
+It might be better to run bluetooth to mqtt server (esprino hub)
+
+edit ```~/IOTstack/services/nodered/service.yml```  
+add 
+```
+network_mode: "host"
+```  
 as consquence http://influxdb:8086 will not become http://127.0.0.1:8086
 
 ### Running exec node on host RasPi
@@ -255,19 +328,18 @@ Check on https://github.com/gcgarner/IOTstack/wiki/Node-RED how to run script on
 
 ### Securing Node-red
 
-You will need password hashes to setup authentication in the node-red settings file. You can create a password hash from the console in Node-red container with:  
-```node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" anotherpassword```
+Resources: https://nodered.org/docs/user-guide/runtime/securing-node-red
+
+Start a terminal in the node-red contrainer: ```./services/nodered/terminal.sh ```  
+You will need password hashes to setup authentication in the node-red settings file. You can create a password hash from the console in Node-red container with:   
+```
+node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" anotherpassword
+```
 This will produce something like: ```$2a$08$An17ZKyjuLSlF23ZBU9Y8exQ4HulyNvlu5BHg2gjKaGJIigmCrWc6``` which you will later copy into the settings file.
 
-On RasPi
-```
-nano ~/IOTstack/volumes/nodered/data/settings.js
-```
-Follow instructions from https://nodered.org/docs/user-guide/runtime/securing-node-red
+Make two password hashes, one for the user "admin" and one for "user".
 
-Creating https certificates is complicated and not attempted here.  
-
-#### Securing Editor and Admin
+Edit ```~/IOTstack/volumes/nodered/data/settings.js ```   
 At appropriate location in the settings.js file enable something like this:
 ```
    adminAuth: {
@@ -283,47 +355,110 @@ At appropriate location in the settings.js file enable something like this:
                 password: "here goes the hash you created with node-e... command above",
                 permissions: "read"
             }
-
         ]
-        default: {
-            permissions: "read" 
-        }
     },
 ```
-#### Securing Dashboard
-At appropirate location the settings.js file enable something like this:
+Enable:
 ```
-    httpNodeAuth: {user:"user",pass:"$2a$08$zZWtXTja0fB1pzD4sHCMyOCMYz2Z6dNbM6t$
+    httpNodeAuth: {user:"user",pass:"the hash that goes with user"
 ```    
+Creating https certificates is complicated and not attempted here.  
 
 ## Configure Grafana
-The settings are located in ~IOTstack/services/grafana/grafana.env
+grafana https://IOTstackIP:3000  
+
+The settings are located in ```~/IOTstack/services/grafana/grafana.env```
 default is admin/admin
 
-## motionEye
-Install motionEye. If you want to boot from USB SSD and store images on SSD you will want to install motionEye as listed on its github wiki https://github.com/ccrisan/motioneye/wiki/Install-On-Raspbian. 
+Edit environment file and change   
+```#TZ=Africa/Johannesburg```
+Remove ```#``` and use your time zone, e.g. America/Phoenix (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
 
-Best is to run motionEye on Raspi 4 with ethernet connection to your router. When you install the system set eth0 IP and gateway accordingly. Also dont forget to enable SSH and/or VNC otherwise it will be difficult to manage the system remotly.
+### Set Password
+In ```~/IOTstack/services/grafana/grafana.env``` change 
+```GF_SECURITY_ADMIN_PASSWORD=yourpassword``` or use firsttime browser logon which forces you to select new password.   
 
-Point your webbrowser to https://IPofyourraspberry:8765
-Username: admin pw: empty
+You can reset password with:  
+```
+docker exec grafana grafana-cli --homepath "/usr/share/grafana" admin reset-admin-password "admin"
+```
+Then access the web console https://IOTstackIP:3000 and it will ask for new password.
 
-add camera such as Dafang Hack camera at rtsp://192.168.x.y:8554/unicast
+## Configure wireguard
 
-When you setup motion in the program, the red squares on the edited mask is where motion will not be considered.
+This is not Tested, I run wireguard and network service on separate raspberry pi hardware. Installation is described under other IOT services.
 
-## piHole, VPN and DHCP
-piHole, VPN and DHCP run well on the same RasPi.
-Often VPN and DHCP is configured on your router.
+Create compose-override.yml in IOTStack folder:
 
-### Router OpenWRT
+```
+cd ~/IOTStack
+sudo nano compose-override.yml
+```
+```
+services:
+  wireguard:
+    environment:
+      - PUID=1000                                       
+      - PGID=1000                                     
+      - TZ=America/Phoenix
+      - SERVERURL=your-dynamic-dns-name.something.com
+      - SERVERPORT=51820
+      - PEERS=5 #optional                       
+      - PEERDNS=auto #optional
+      - INTERNAL_SUBNET=100.64.0.0/24 #optional
+    ports:
+      - 51820:51820/udp
+```
+
+On the router make sure port 51820 TCP/UDP is forwarded to the IOT device.
+
+  * WireGueard TCP/UDP 51580 tp pihole
+
+Check that connections work:
+
+```
+sudo nmap -sU -p 51820 192.168.11.250
+sudo nmap -sU -p 51820 <your-dynamic-dns-account>.something.com
+```
+
+Now copy the configuration to your client computer:   
+```
+scp pi@<Rpi-ip-address>:/home/pi/IOTStack/services/wireguard/config/peer1/peer1.conf ~/peer1.conf
+```
+and import it into the wireguard client.
+
+---
+# Other IOT Webservices
+
+## piHole, VPN and DHCP (without IOT server and docker)
+piHole, VPN and DHCP run well on the same RasPi.  
+
+Running VPN on your router might not have as much throughput as on external device.
+
+### Router Firmware: OpenWRT
 OpenWRT is thrid party WiFi router software. It comes preinstalled in Gl.inet WiFi routers.
 
-Menu "LAN DHCP Server General Settings": set pool of IP numbers
+In OpenWRT DHCP set pool of IP numbers. If you used DHCP server from piHole the DHCP IP range on the router and piHole can not overlap.
+
+*Network->Interfaces-Lan->Edit->DHCPServer->GeneralSettings:* Start and Number of leases to be outside of PiHole Server range  
+
+*Network->Interfaces-Lan->Edit->DHCPServer->AdvancedSettings: 6, 192.168.x.numberofpihole*
 
 To use pi-hole as DNS server: https://www.reddit.com/r/pihole/comments/av1qd4/setting_up_pihole_on_openwrt/
 
-Menu "LAN DHCP Server Advanced Settings DHCP Options": 6,pihole_ip_number
+In OpenWRT menu "Interfaces, LAN, DHCP Server Advanced Settings DHCP Options": 6,pihole_ip_number
+
+### Force DNS Lookup to PiHole
+
+Network, Firewall, Custom Rules
+Redirect DNS requests to go through router
+```
+iptables -t nat -A PREROUTING -i br-lan ! -s 192.168.yourPiHole -p udp --dport 53 -j REDIRECT
+iptables -t nat -A PREROUTING -i br-lan ! -s 192.168.yourPiHole -p tcp --dport 53 -j REDIRECT
+
+iptables -t nat -A PREROUTING -i eth0.2 -p udp --dport 53 -j DNAT --to-destination 192.168.yourPiHole
+iptables -t nat -A PREROUTING -i eth0.2 -p tcp --dport 53 -j DNAT --to-destination 192.168.yourPiHole
+```
 
 ### DHCP Static Configuration
 Example home cofiguration:  
@@ -338,13 +473,17 @@ Example home cofiguration:
 
 #### DynDNS
 In most cases you will want to have the IP number of your router accessible from the internet.
-Example service:
+Example service in OpenWRT:
 
 * myddns_ip4 
 ```
+enable
 yourselectedname.mooo.com
 custom http://freedns.afraid.org/dynamic/update.php?heregoesthelongnumber
 ```
+the link above is displayed on afraid.org
+dynamic dns -> direct URL -> in the address bar
+
 * opendns 
 ```
 yourusername pw 
@@ -366,21 +505,37 @@ Passowrd: as in opendns and dns o matic
 #### FireWall Port Forwards
   * OpenVPN UDP/TCP 1194 to pihole  
   * OpenVPNHPPTS TCP 443 to 1194 pihole  
-  * WireGueard TCP/UDP 51580 tp pihole  
+  * WireGueard UDP 51820 tp pihole  
   * MQTT TCP/UDP to home assistant
     * 1883 default unencrypted
-    * 8883 default encrypted
-    * 1884
-    * 8884   
+    * 8883 default encrypted (not used)
+    * 1884 (not used)
+    * 8884 (not used)
   * also check custom rules for pi-hole here https://www.reddit.com/r/pihole/comments/av1qd4/setting_up_pihole_on_openwrt/
 
 ### PiHole
 PiHole is a DNS filter that blocks access to advertising servers.  
-For example:  
-http://http://192.168.0.250/admin
-login
 
-DHCP server 2..128
+Install pi-hole:
+```
+wget -O basic-install.sh https://install.pi-hole.net
+sudo bash basic-install.sh
+```
+Keep track of the autogenerated password or set a new password with
+```
+pihole -a -p
+```
+
+Open the interface:    
+http://192.168.0.250/admin  
+login with password
+
+Enable the DHCP server set the range to e.g. 2..128 but not overlapping the range on your router DHCP.
+
+*PiHole Admin Interface ->Settings->DHCP*  
+Set Range with From To  
+Enable DHCP Server   
+
 upstream DNS server on pihole to openDNS
 configure openDNS
 
@@ -390,7 +545,10 @@ Documentation:
 * https://www.pivpn.io/
 * https://github.com/pivpn/pivpn
 
+First install wireguard from repository, then setup with pivpn.
+
 ```
+sudo apt-get install wireguard
 curl -L https://install.pivpn.io | bash
 ```
 or
@@ -399,21 +557,22 @@ curl -L https://install.pivpn.io > VPNinstall.sh
 chmod +x VPNinstall.sh
 ```
 
-Configure script
-* static ip pihole
-* local user default
+Use the default settings in the configure script plus
+* wireguard enable
+* port default is 51820
+* static ip you reserved on router for the server
+* local user default 
+* acccept piHole as DNS server for wireguard clients
+* dynamicDNS entry of your server e.g. what you setup on afraid.org for your router such as something.mooo.com. dynDNS is usually setup on the router.
+* enable unattended upgrades
 
-uninstall
+Make sure there is connection to the wireguard port. You can install nmap on Windows or use unix computer and execute:
+
 ```
-pivpn -u
+sudo nmap -sU -p 51820 192.168.11.250
+sudo nmap -sU -p 51820 <your-dynamic-dns-account>.something.com
 ```
-#### WireGuard
-https://www.wireguard.com/
-Settings  
-port default 51820  
-accept pi hole as DNS server  
-public DNS entry utzinger.mooo.com  
-unattended upgrades  
+Port will need to be listed as open.
 
 Create user profiles  
 ```
@@ -426,6 +585,7 @@ pivpn -qr
 ```
 and import on the phone  
 
-#### OpenVPN
-https://openvpn.net/  
-OpenVPN can run together with WireGuard but it requires manual setup. Best is to choose either wireguard or openVPN. OpenVPN is useful because there are VPN services you can purchase giving you local access to other countries and if you have OpenVPN already installed on your PC you can just add an other configuration file for the VPN to your home.
+uninstall
+```
+pivpn -u
+```
