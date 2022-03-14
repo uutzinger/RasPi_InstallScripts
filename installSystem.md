@@ -1,26 +1,28 @@
 # Upgrade System
+If you have not done already  
 ```
 sudo apt-get update
 sudo apt-get dist-upgrade -y
 ```
 ## Zram
 ```
-git clone https://github.com/StuartIanNaylor/zram-config
+git clone https://github.com/ecdye/zram-config
 cd zram-config
 sudo sh install.bash
 ```
-if necessary modify the settings
+Its usually not necessary to modify the zram settings
 ```
 sudo nano /etc/ztab
 ```
 
 ## Conky
+BME210 optional  
 ```
 cd ~
 sudo apt-get -y install conky-all
-wget -O /home/pi/.conkyrc https://raw.githubusercontent.com/novaspirit/rpi_conky/master/rpi3_conkyrc
+wget -O /home/pi/.conkyrc https://raw.githubusercontent.com/uutzinger/RasPi_InstallScripts/master/conkyrc
 ```
-Setup desktop to autostart conky. Work in progress
+Setup desktop to autostart conky.
 ```
 sudo nano /usr/bin/conky.sh
 ```
@@ -46,6 +48,7 @@ Categories=Utility;
 ```
 
 ## Configure Raspi interfaces
+If you have not done already:
 ```
 sudo raspi-config
 ```
@@ -53,42 +56,27 @@ sudo raspi-config
 * Enable VNC, I2C, SPI, Camera
 
 ## Setup video to create display even when no display is attached
-Configure for VNC even when no monitor is attached to system
-This section is optional
-```
-sudo nano /boot/config.txt
-```
-add:
-* hdmi_force_hotplug=1
-* hdmi_group=1
-* hdmi_mode=16
-
-This gives you 720p or 1080p. I have not been able to get 1080p output.
+This has changed in bullseye version and you should attempt raspi-config instead of editing /boot/config.txt.
 
 ## Visual Code 
-This editor needs more resouces than others but I still prefer and it works on RasPi
-```
-wget https://packagecloud.io/headmelted/codebuilds/gpgkey
-sudo apt-key add gpgkey
-sudo -s
-. <( wget -O - https://code.headmelted.com/installers/apt.sh )
-exit
-```
+Visual studio code needs more resouces than other editors but I still prefer it on RasPi. The binaries are available at Microsoft: 
+https://code.visualstudio.com/#alt-downloads
+Download the ARM debian version. Raspian is 32bit operating system. ARM64 will not work.  
+Use the file explorerer and navigate to the Downloads folder and execute the downloaded_file.deb.  
+Let the installation complete.  
 
 ## Python
 ```
 cd ~
+sudo apt-get -y install python3-dev
 sudo apt-get -y install python3-pybind11
-sudo apt-get -y install python-pybind11
 sudo apt-get -y install libusb-1.0-0-dev
 sudo apt-get -y install swig
 sudo apt-get -y install gfortran
-sudo apt-get -y install python3-numpy python3-dev python3-pip python3-mock
-wget https://bootstrap.pypa.io/get-pip.py
-sudo python3 get-pip.py
-sudo pip3 install --upgrade setuptools
+sudo apt-get -y install python3-pip
+sudo pip3 install -U setuptools
 sudo pip3 install -U six wheel mock
-
+sudo pip3 install -U numpy
 ```
 
 ### Python compiler, picamera, imutils
@@ -98,22 +86,28 @@ sudo pip3 install "picamera[array]"
 sudo pip3 install imutils
 git clone https://github.com/jrosebr1/imutils.git
 ```
-This is optional. It takes a long time
+
+BME210 optional. This takes a long time  
 ```
 sudo pip3 install scipy
 sudo pip3 install scikit-image
 ```
-These will provide adanced face detection
+
+BME210 optional. These will provide advanced face detection  
 ```
 sudo pip3 install dlib
 sudo pip3 install face_recognition
 sudo pip3 install zmq
 ```
+
 ### Opencv
-If you want to compile openCV follow the installOpenCV instrutions, otherwise use the following:
+You can compile openCV and follow my installOpenCV instrutions.
+
+For BME 210 and if you dont want to compile it, use:  
 ```
-sudo pip3 install opencv-contrib-python==4.1.0.25
+sudo pip3 install opencv-contrib-python==4.5.3.56
 ```
+
 ### I/O 
 Allow for digitial input output and its support tools
 ```
@@ -136,8 +130,8 @@ cd ..
 git clone https://github.com/uutzinger/meArmPi.git
 ```
 ## Java Development Environment
-Open JDK 11. 
-This section is needed if you want ot program in Java on the Raspberry Pi.
+BME 210 optional  
+This will install Open JDK 11 allowing you to program in Java on the Raspberry Pi.
 ```
 sudo apt-get -y install ant java-common
 sudo apt-get -y install openjdk-11-jdk
@@ -164,7 +158,8 @@ sudo apt-get -y install luvcview
 sudo apt-get -y install fswebcam
 ```
 ## Intel Thread Building Blocks
-Other packages can be accelerated with tbb. The link below takes least amoun of time.
+BME210 optional
+Other packages can be accelerated with tbb. The link below takes least amoun of time for installation.
 ```
 cd ~
 wget https://github.com/PINTO0309/TBBonARMv7/raw/master/libtbb-dev_2019U5_armhf.deb
@@ -173,10 +168,11 @@ sudo ldconfig
 rm libtbb-dev_2019U5_armhf.deb
 ```
 ## Build your own CMake
+BME 210 optional
 ```
-sudo apt-get install qt5-default
-sudo apt-get install qtcreator
-sudo apt-get install libssl-dev
+sudo apt-get -y install qt5-default
+sudo apt-get -y install qtcreator
+sudo apt-get -y install libssl-dev
 git clone https://gitlab.kitware.com/cmake/cmake.git
 cd cmake
 ./bootstrap --qt-gui -- -DCMAKE_BUILD_TYPE:STRING=Release 
