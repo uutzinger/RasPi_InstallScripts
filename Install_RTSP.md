@@ -156,6 +156,27 @@ or use VLC
 ```
 vlc rtsp://hostname.local:8554/test
 ```
+## Receiver with overlay or resize or flip
+Create SVG graphics for example in Inkscape. Example below is CrossHair.svg.
+
+Test the svg graphic object
+```
+# Cross Hair in the center
+gst-launch-1.0 videotestsrc ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.133 x-relative=0.45 y-relative=0.433 ! videoflip method=clockwise ! videoscale ! video/x-raw,width=1280,height=720 ! autovideosink
+
+# Grid Overlay
+gst-launch-1.0 videotestsrc ! rsvgoverlay location=Bucket.svg width-relative=1 height-relative=1 x-relative=0 y-relative=0 ! videoflip method=clockwise ! videoscale ! video/x-raw,width=1280,height=720 ! autovideosink
+```
+
+```
+gst-launch-1.0 rtspsrc location=rtsp://hostname.local:8554/test latency=10 ! decodebin ! videoconvert ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.133 x-relative=0.45 y-relative=0.433 ! autovideosink
+```
+
+Include resizing of the image to 640x360 (half of 720p), it would be better to request on server side smaller images through. Resizing to larger image for better view would make sense.
+
+```
+gst-launch-1.0 rtspsrc location=rtsp://hostname.local:8554/test latency=10 ! decodebin ! videoconvert ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.1 x-relative=0.5 y-relative=0.5 ! videoscale ! video/x-raw,width=1280,height=720 ! autovideosink
+```
 
 # Build from source 1.18.4
 Not recommended
@@ -248,6 +269,7 @@ sudo ldconfig
 ```
 
 ## Download and unpack bad plugins
+
 ```
 cd ~
 # dependencies for RTMP streaming (YouTube)
@@ -273,6 +295,7 @@ sudo ldconfig
 ```
 
 ## Download and unpack ugly plugins
+
 ```
 cd ~
 # download and unpack the plug-ins ugly
@@ -302,6 +325,7 @@ sudo apt-get install libx264-dev
 ```
 
 ## download and unpack omxh264enc plugins
+
 ```
 cd ~
 # Download and unpack the plug-in gst-omx
