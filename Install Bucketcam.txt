@@ -1,0 +1,15 @@
+Install gstreamer
+Install vc redistributale
+Install bonjour
+
+Open Power Shell
+
+Enter
+$Env:PATH > path_backup.txt    
+Do not repeat the above if gstreamer does not work after completing this step.
+
+Enter
+Start-Process powershell -Verb runAs  
+
+In new Window enter
+setx /M PATH "$ENV:PATH;C:\gstreamer\1.0\msvc_x86_64\bin"

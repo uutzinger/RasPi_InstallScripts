@@ -3,18 +3,99 @@
 The RTSP streamer is an H264 video server with gstreamer.
 This will work for raspberry pi or jetson nano and likely any unix system.
 
-## I have existing Installation and need to Connect or Change Settings
+## Receiver / Client
+This usually is Windows Computer. 
 
-- Install gstreamer on your client and make a script as outline below in Receiver section.
-- Make sure to connect ethernet cable between client and server
-- Connect to client with ```ssh pi@bucketcamera0.local``` or similar
-- Login with standard username and password
-- Edit the run_streamer.sh if you need to make changes, see create shell script section below.
-- You will be able to watch the stream with ```gst-launch-1.0 rtspsrc location=rtsp://hostname.local:8554/test latency=10 ! decodebin ! autovideosink```
-- Best on windows is to create a batch file and run it with CLI. e.g. use notepad.exe edit file by entering above command and save it to desktop as ```watchstream.bat```. Double click the file and it should start the stream, given the server is connected and running.
+### Prerequisits on Client
+- gstreamer from https://gstreamer.freedesktop.org/download/ using 64bit runtime installer for MSVC   
+- bonjour https://support.apple.com/downloads/DL999/en_US/BonjourPSSetup.exe to get mDNS working.  
+- VC redistributable https://aka.ms/vs/17/release/vc_redist.x64.exe   
 
-## Dependencies
+### Network
+Plug the server directly into your notebook computer. 
 
+If you connect the server directly to your client with wired cable, the address is hostname.local. If both obtain IP through DHCP then the address is just hostname. If mDNS or DNS is not working then your hostname will be something like 10.TE.AM.11.
+
+If you setup static IP on the server you will need to set the IP of your network connection to the same subnet. E.g. 10
+```
+10.TE.AM.6 your computer
+255.255.255.0 netmask
+10.TE.AM.1 as gateway
+```
+
+### Script to run Viewer
+Create a file such as ```LaunchViewer.bat``` on your client computer, with content such as:
+
+```
+cd %HOMEDRIVE%%HOMEPATH%
+cd Desktop
+gst-launch-1.0 rtspsrc location=rtsp://10.41.83.11:8554/test latency=10 buffer-mode=auto drop-on-latency=1 ! decodebin ! videoconvert ! videoflip method=rotate-180 ! rsvgoverlay location=Bucket0.svg width-relative=1 height-relative=1 x-relative=0 y-relative=0  ! autovideosink
+```
+
+The above assumes your have the script on your desktop and the overlay file is located there also.
+
+Alternativel you can use VLC
+```
+vlc rtsp://hostname.local:8554/test
+```
+But make sure you set buffering to very small number (advanced options) otherwise your latency is going to be in the seconds.
+
+### Overlay
+Create SVG graphics for example in Inkscape. You can use colored lines and text. gstreamer has module to overlay static SVG graphics onto your video feed.
+
+#### Test the SVG Graphic Object
+
+Test your script without RTSP, just with test video feed:
+
+```
+# Cross Hair in the center
+gst-launch-1.0 videotestsrc ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.133 x-relative=0.45 y-relative=0.433 ! videoflip method=clockwise ! autovideosink
+
+# Grid Overlay
+gst-launch-1.0 videotestsrc ! rsvgoverlay location=Bucket.svg width-relative=1 height-relative=1 x-relative=0 y-relative=0 ! videoflip method=clockwise ! autovideosink
+```
+
+#### Test with RTSP
+```
+gst-launch-1.0 rtspsrc location=rtsp://hostname.local:8554/test latency=10 ! decodebin ! videoconvert ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.133 x-relative=0.45 y-relative=0.433 ! autovideosink
+```
+
+### Modify the Server Settings
+On the RTSP server there is a script executed at boot time to start RTSP server.
+
+You can SSH to the server: ```ssh pi@10.TE.AM.11``` and edit the file using ```nano run_server.sh```. Password is the usual.
+
+```
+#! /bin/bash
+cd /home/pi
+./test-launch "( v4l2src device=/dev/video0 ! video/x-h264, width=1280, height=720, framerate=15/1 ! h264parse config-interval=1 ! rtph264pay name=pay0 pt=96 )" &
+v4l2-ctl -c white_balance_auto_preset=10
+v4l2-ctl -c auto_exposure=0
+# v4l2-ctl -c exposure_time_absolute=10000
+v4l2-ctl -c video_bitrate=500000
+v4l2-ctl -c video_bitrate_mode=0
+```
+
+As you can see you can access any video camera in the ```/dev/``` folder. This will not work on latest bullseye raspian image unless gstreamer uses libcam by default sometime in the future. 
+You can set the resolution of the camera (check online what resolutions are supported, usually 1080p, 720p, 640x480, 320x240). 
+You can set the frame rate. It will need to be experessed as ratio e.g. 15/1
+You can use ```v4l2-ctl``` to change the camera properties.
+```v4l2-ctl -l``` lists all properties you can change. It will take default dev/video0 camera. But you can choose the device.
+Recommended is autoexposure, to enable auto exposure you need set it 0 (not 1)
+Recommended is auto white balancing. This is not recommended for computer vision processing but is ideal for stream viewing.
+You will want to limit the amount of data sent over the network. The bitrate is bits per second.
+The bitrate mode is either constant bitrate or variable bitrate.
+
+# Build the RTSP Server
+The RTSP server for gstreamer is not available on windows. Therefore the server will need to run on UNIX based OS. The RTSP server is not distributed as binary. So you will need to first install gstreamer, and the gstreamer development components and then build the RTSP server.
+
+These programs might be helpful to explore camera properties and gstreamer options:  
+https://github.com/jetsonhacks/camera-caps
+https://github.com/jetsonhacks/gst-explorer
+
+## Server Dependencies
+
+Not all dependencies below are needed for gstreamer but they are needed if you plan  to use opencv. This is my basic vision processing setup.
 ```
 sudo apt-get -y install libjpeg-dev libtiff-dev libtiff5-dev libjasper-dev libpng-dev
 sudo apt-get -y install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libavresample-dev
@@ -30,11 +111,11 @@ sudo apt-get -y install python3-pyqt5
 sudo pip3 install opencv-contrib-python==4.1.0.25
 ```
 
-## Install Server
+## Create RTSP Server
 
-Either Install pre built or build your own (not recommended) 
+Either install pre built or build your own server (not recommended) 
 
-Check current verison with:
+Check current verison of gstreamer with:
 ```
 dpkg -l | grep gstream*
 ```
@@ -59,26 +140,21 @@ sudo apt-get install -y gstreamer1.0-rtsp
 ```
 
 ## Alternative: Installing latest gstreamer,build from source
-Replace current version with a version of your choice  
+Replace current version with a version of your choice   
 Source: https://qengineering.eu/install-gstreamer-1.18-on-raspberry-pi-4.html
 
-These apps might be helpful:  
+Continue with steps outline at the end or the QEngineering Website.  
 
-https://github.com/jetsonhacks/camera-caps
-https://github.com/jetsonhacks/gst-explorer
+## Build and Install Gstreamer RTSP Server
 
-Continue with steps outline at the end or the QEngineering Website.
-
-## Build and Install Gstramer RTSP server
-You will need to build RTSP server regradless how you installed gstreamer.
-RTSP server is not available on Windows.
+You will need to build RTSP server regradless whether you built gstreamer or installed it with package manager.
 
 ```
 sudo apt-get -y install gobject-introspection
 sudo apt-get -y install libgirepository1.0-dev
 sudo apt-get -y install gir1.2-gst-rtsp-server-1.0
 
-# Download rtsp server version 1.14.4
+# Download rtsp server version 1.14.4 or the one that matches your current isntallation.
 wget https://gstreamer.freedesktop.org/src/gst-rtsp-server/gst-rtsp-server-1.14.4.tar.xz
 tar -xf gst-rtsp-server-1.14.4.tar.xz
 cd gst-rtsp-server-1.14.4
@@ -88,7 +164,11 @@ sudo make install
 sudo ldconfig
 ```
 
+The RTSP server is in the example folder and is called ```test-launch```. It accessess libraries in ```.libs```. If you copy test-launch you will also need to copy the hidden .libs folder.
+
 ## Test the Streams
+
+Before working with camera you will want to create a test stream such as:
 
 ```
 cd ~/gst-rtsp-server-1.14.4/build/examples
@@ -97,10 +177,11 @@ cd ~/gst-rtsp-server-1.14.4/build/examples
 # smaller number less output
 export GST_DEBUG="*:5"
 ```
-Watch with receiver as shonw below on Windows or on same computer.
+Watch with receiver as shown above  on Windows or on same computer.
 
-## Create Shell Script to Simplify start of Server
-Youi will want to simply the start of the servcer.
+## Create Shell Script to Simplify Start of Server
+
+You will want to start the server with a simple script:
 
 ```
 #! /bin/bash
@@ -113,9 +194,9 @@ v4l2-ctl -c video_bitrate=500000
 v4l2-ctl -c video_bitrate_mode=0
 ```
 
-v4l2-ctl -l list camera options. You will need to program the following
-- video bit rate
-- autoexposure or set exposure time, often auto_exposre on means setting it to 0
+```v4l2-ctl -l``` lists camera options. You will need to program the following
+- video bitrate
+- autoexposure or set exposure time, often auto_exposure ON means setting it to 0
 - white balancing
 - bitrate mode, you will want either constant bit rate or varibale bit rate
 - if you have more than one camera you can change the camera device=/dev/video1 etc.
@@ -126,56 +207,35 @@ On jetson nano your script might need to look like:
 ```
 
 ## Run the Script at Boot
-To run the above script each time the raspberry pi boots you edit
+
+To run the above script each time the server boots you edit
+
 ```
 sudo nano /etc/rc.local
 ```
-You add the following line before exit 0
+
+and add the following line before exit 0
 ```
 /home/pi/run_streamer.sh >> /home/pi/run_streamer.log 2>&1
 ```
 
-## Make the device Wired and Compliant
-You might need to turn off wireless and bluetooth for your application.
+## Make the Device Wired and Compliant
+For some usage scenarios you will need to turn off wireless and bluetooth. 
+
 You will want to set the hostname
 ```
 sudo raspi-config
 ```
-Set hostname under system
+THen set hostname under system
 
-## Receiver
-On windows machine instgall gstreamer from https://gstreamer.freedesktop.org/download/ using 64bit runtime installer for MSVC
-
-Plug the server directly into your notebook computer and:
-
+Set static IP (this will require that your client is set also to static IP, advantage is that neither DNS nor mDNS needs to work):
 ```
-gst-launch-1.0 rtspsrc location=rtsp://hostname.local:8554/test latency=10 ! decodebin ! autovideosink
-```
-
-or use VLC
-```
-vlc rtsp://hostname.local:8554/test
-```
-## Receiver with overlay or resize or flip
-Create SVG graphics for example in Inkscape. Example below is CrossHair.svg.
-
-Test the svg graphic object
-```
-# Cross Hair in the center
-gst-launch-1.0 videotestsrc ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.133 x-relative=0.45 y-relative=0.433 ! videoflip method=clockwise ! videoscale ! video/x-raw,width=1280,height=720 ! autovideosink
-
-# Grid Overlay
-gst-launch-1.0 videotestsrc ! rsvgoverlay location=Bucket.svg width-relative=1 height-relative=1 x-relative=0 y-relative=0 ! videoflip method=clockwise ! videoscale ! video/x-raw,width=1280,height=720 ! autovideosink
-```
-
-```
-gst-launch-1.0 rtspsrc location=rtsp://hostname.local:8554/test latency=10 ! decodebin ! videoconvert ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.133 x-relative=0.45 y-relative=0.433 ! autovideosink
-```
-
-Include resizing of the image to 640x360 (half of 720p), it would be better to request on server side smaller images through. Resizing to larger image for better view would make sense.
-
-```
-gst-launch-1.0 rtspsrc location=rtsp://hostname.local:8554/test latency=10 ! decodebin ! videoconvert ! rsvgoverlay location=CrossHair.svg width-relative=0.1 height-relative=0.1 x-relative=0.5 y-relative=0.5 ! videoscale ! video/x-raw,width=1280,height=720 ! autovideosink
+sudo nano /etc/dhcpcd.conf
+# use
+# 10.TE.AM.11/24 
+# /24 is netmask 255.255.255.0
+# static routers = 10.41.83.1
+# static domain_name_server = 10.41.83.1
 ```
 
 # Build from source 1.18.4

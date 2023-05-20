@@ -1,4 +1,4 @@
-# Install Basic Libraris
+# Install Basic Libraries
 
 ## Date
 If the data and time is incorrect, set it closer to actual date, otherwise ntp might not work on your network
