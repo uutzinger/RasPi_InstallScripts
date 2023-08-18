@@ -1,196 +1,439 @@
-# Raspberry Pi Lite For Motor Controller
+# Raspberry Pi "Lite" for Motor Control
 
-Here we attempt creating a Raspberry Pi Zero 2 W raspian setup that will work with Odrive and bluetooth gamepad as controller.
+Here I attempt creating a Raspberry Pi Zero 2 W setup that will communicate with **Odrive** and a **bluetooth** controller as well as indicated status and read sensors.
 
-For fastest boot the controller should not have anything else running that the minimum services.
-Raspberry Pi Zero 2 W will boot in approximately 20 secs from power on and be able to have bluetooth device connected. 
+I require **fast boot** time to that the controller can interact with thte motor in reasonable time. Raspberry Pi with linux might not be ideal environment as it will take more than 10 seconds to boot. A short boot time is accomplished by disabling many unneeded services and using a second Raspberry Pi that will be handling other services.
 
-Networking over wireless is not needed and we will use point to point ethernet over serial to connect to second raspberry. Second raspberry will have many more interfaces enabled but  boot will take longer: wireless, i2s sensors, camera and lights etc.
+A Raspberry Pi Zero 2 W will boot in approximately 20 secs from power on and be able to have bluetooth device connected.
 
-## SD card
+Networking over wireless is not needed and we will use point to point ethernet over serial UART to connect to the second raspberry. PPP ping delay at 1000k baud is about 1-2ms and using ZMQ for communication between several program and between the two computers should enable realtime handling of the complete system.
+
+- Raspberry Pi **Motor**
+    - Bluetooth OFF
+    - Wirless OFF
+    - Serial UART Point to Point Protocol
+    - ODrive
+    - [USB Hub](https://a.co/d/i025VFW) for Raspberry Pi Zero
+    - [Edimax BLE 5.0 Dongle](https://a.co/d/0fMSu0X)
+- Raspberry Pi **Board**
+    - Wifi ON
+    - Serial UART Point to Point Protocol
+    - I2C accelerometer
+    - I2C realtime clock
+    - Neopixel on PIN18
+    - Level Shifter 3.5V to 5V (for neopixel)
+    - Camera optional
+
+
+## **General Configuration**
+
 1) Download Raspian Imager https://downloads.raspberrypi.org/imager/imager_latest.exe
 2) Use Raspberry Pi OS Lite 64bit
 3) Set, ssh, wifi, username, password, hostname in the imager settings.
 4) Expand the user/2nd partition
+5) ```sudo raspi-config```, set auto login and the interfaces you need, dont add unnecessar interfaces as it adds to boot delay.
 
-## Configuration
-If you can not download from several websites check that your time is close to correct.
-sudo date -s 2023.04.19-19:35
+If you have troubles downloading or updating the raspberry pi, check that your time is close to the correct current time. First check date with ```date```, then set the date with ```sudo date -s 2023.04.19-19:35```
 
-### General
-```
-sudo raspi-config
-```
-Set auto login, the interfaces you need
-
-## Install Packages
+## **Install Packages**
 
 ### Basics
 ```
 sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get full-upgrade
 sudo apt-get install python3-pip
-```
-### Bluetooth and Device Connections
-For device connected to Odrive
-https://python-evdev.readthedocs.io/en/latest/
-```
-sudo pip3 install python-evdev
-sudo pip3 install pyudev
+sudo apt-get install git
+sudo apt-get install i2c-tools
 ```
 
-### PySerial
-```
-sudo pip3 install pyserial```
-```
-To talk to odrive.
+### **PySerial**
+```sudo pip3 install pyserial``` to talk to odrive.
 
-## ODrive Tool
+### **ODrive Tool**
+```
+git clone https://github.com/odriverobotics/ODrive.git
+```
 ```
 sudo pip3 install --pre --upgrade odrive
-
-sudo bash -c "curl https://cdn.odriverobotics.com/files/odrive-udev-rules.rules > /etc/udev/rules.d/91-odrive.rules"
-sudo bash -c "udevadm control --reload-rules"
-sudo bash -c "udevadm trigger" 
+```
+```
+# cd ~/ODrive
+# sudo bash -c "curl https://cdn.odriverobotics.com/files/odrive-udev-rules.rules > /etc/udev/rules.d/91-odrive.rules"
+# sudo bash -c "udevadm control --reload-rules"
+# sudo bash -c "udevadm trigger" 
 ```
 
-Also download latest firmware for your odrive as shown here. https://docs.odriverobotics.com/releases/firmware
-E.g. for Odrive V3.6 with 56V capacitors https://odrive-cdn.nyc3.digitaloceanspaces.com/releases/firmware/CYC5jqJ8C3fX8EsJrgmPryR3_y9xgtR-zNw5jgeSUKk/firmware.elf
-Once we disable wireless you can no longer download firmware.
+Also download latest firmware for your Odrive as shown here: [Firmware](https://docs.odriverobotics.com/releases/firmware)
 
-Ubuntu, Raspbian: If you can’t invoke odrivetool at this point, try adding ~/.local/bin to your $PATH (see related bug). This is done for example by running nano ~/.bashrc, scrolling to the bottom, pasting export PATH=$PATH:~/.local/bin, and then saving and closing, and close and reopen the terminal window.
+For example I need Odrive V3.6 with 56V capacitors.
+```
+wget https://odrive-cdn.nyc3.digitaloceanspaces.com/releases/firmware/BhI6UROJjzOq9x1S755S9xKxf8SJcOhtuW9g2OV45-8/firmware.elf
+```
 
-### Realtime Clock
-For device connecting to internet
+If you can’t invoke ```odrivetool``` at this point, try adding ```~/.local/bin``` to your $PATH. This is done for example by running ```nano ~/.bashrc```, scrolling to the bottom, pasting ```export PATH=$PATH:~/.local/bin```, and then saving, closing and reopening the terminal window.
 
-pip3 install adafruit-circuitpython-ds1307
+### **Other Packages**
+- **bleak**
+```
+git clone https://github.com/hbldh/bleak.git
+cd bleak/
+sudo pip3 install poetry
+sudo pip3 install pytest
+sudo pip3 install flake9
+sudo pip3 install black
+poetry install
+poetry run black .
+poetry run flake8
+poetry run pytest
+sudo pip install .
+```
 
-sudo modprobe rtc-ds1307
-sudo nano /etc/modules 
-add to end of file
-    rtc-ds1307
-sudo nano /etc/rc.local
-add before exit0
-    echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device
-    sudo hwclock -s
-    date
-sudo hwclock -w
+- **uvloop**
+```
+git clone https://github.com/MagicStack/uvloop.git
+cd uvloop
+sudo apt -y install python3-docutils
+sudo apt-get autoremove  automake
+sudo apt-get install automake libtool libssl-dev libffi-dev
+git submodule init
+git submodule update
+sudo pip install .
+make test
+```
 
-### Accelerometer
-For device connecting to internet
-circuit python
-
-https://pypi.org/project/mpu9250-jmdev
-sudo pip3 install mpu9250-jmdev
-
-sudo pip3 install adafruit-circuitpython-icm20649
-
+- **bluez**
+```
 cd ~
-git clone https://github.com/Mayitzin/ahrs.git
-cd ahrs
-sudo python3 setup.py install
+wget http://www.kernel.org/pub/linux/bluetooth/bluez-5.68.tar.xz
+tar xvf bluez-5.68.tar.xz
+cd bluez-5.68
+sudo apt-get install -y libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev
+./configure --enable-library
+make
+sudo make install
+systemctl status bluetooth
+sudo systemctl stop bluetooth
+sudo systemctl enable bluetooth
 
-### Neo Pixels
-For device connecting to internet
+sudo nano /lib/systemd/system/bluetooth.service
+```
+```
+[Service]
+...
+ExecStart=/usr/local/libexec/bluetooth/bluetoothd --experimental               
+...
+```
+```
+sudo systemctl daemon-reload
+sudo systemctl restart bluetooth
+```
 
+### **Install Desktop PIXEL**
+If needed:
+```
+sudo apt-get install --no-install-recommends xserver-xorg
+sudo apt-get install --no-install-recommends xinit
+sudo apt-get install raspberrypi-ui-mods
+```
+
+### **Realtime Clock**
+For a device connecting to the internet we should have a realtime clock, otherwise the security certificates are invalid and it will be difficult to obtain time from a time server. I attached an RTC DS1307 to the I2C interface:
+
+```sudo nano /boot/config.txt```
+```
+dtoverlay=i2c-rtc,ds1307
+```
+Rebooth then check if realtime clock is found:
+```
+sudo i2cdetect -y 1
+```
+Then finalize the realtime clock setup.
+```
+sudo apt-get -y remove fake-hwclock
+sudo update-rc.d -f fake-hwclock remove
+sudo systemctl disable fake-hwclock
+```
+
+```sudo nano /lib/udev/hwclock-set``` and comment out these three lines:
+
+```
+#if [ -e /run/systemd/system ] ; then
+# exit 0
+#fi
+```
+
+If you want to access RTC with python:
+```pip3 install adafruit-circuitpython-ds1307```
+
+### **Accelerometer**
+For the device connecting to internet we use circuit python to read the Intertial Measurement Unit. Here I work with icm20649.
+
+```
+git clone https://github.com/uutzinger/Aadafruit-circuitpython-icm20x
+cd Adafruit
+sudo pip install .
+```
+
+To fuse the sensor data I use my IMU library:
+```
+git clone https://github.com/uutzinger/pyIMU.git
+cd pyIMU
+pip install -e .
+```
+
+### **Neo Pixels**
+I will want to display speed and battery status on the device connecting to internet. I am using two 30 LED Neo Pixels. They need to be connected serially as raspberry pi can not drive neo pixel led strips connected to different pins.
+```
 sudo pip3 install rpi_ws281x adafruit-circuitpython-neopixel
-pip install neopixel-plus
+```
 
-root access needed
+Neo pixels require that the python program is run with root access and the clock needed for sound needs is no longer availab le. Sound will need to be turned off.
 
-sound needs to be turned off
+[Learn Neo Pixels](https://learn.adafruit.com/neopixels-on-raspberry-pi/python-usage)
 
-https://learn.adafruit.com/neopixels-on-raspberry-pi/python-usage
-
-
-### PPP
-We will attempt local network over serial RX/TX. Make sure serial console is disabled but serial is enabled for interfaces.
-
-https://docs.j7k6.org/raspberry-pi-ppp-network-serial-console/
-https://www.instructables.com/Connect-the-Raspberry-Pi-to-network-using-UART/
-
-https://docs.bitscope.com/pi-serial/
-https://raspberrypi.stackexchange.com/questions/45570/how-do-i-make-serial-work-on-the-raspberry-pi3-pizerow-pi4-or-later-models/45571#45571
+### **PPP**
 
 ```
 sudo apt-get install ppp
 ```
 
-````
-sudo raspi-config
+We will attempt local network over serial RX/TX (pin 8/10). This will work between two computers only. Make sure serial console is disabled, but serial interface is enabled in ```raspi-config```. Most unix systems can be accessed during boot over hardware serial console. We will need that console to communicate between the two raspberry pi and can not have it act as terminal during boot.
+
+- [PPP over serial](https://docs.j7k6.org/raspberry-pi-ppp-network-serial-console/)
+- [Networking over UART](https://www.instructables.com/Connect-the-Raspberry-Pi-to-network-using-UART/)
+
+- [Raspberry Pi Serial Ports](https://docs.bitscope.com/pi-serial/)
+- [Raspberry Pi Zero, serial and bluetooth](https://raspberrypi.stackexchange.com/questions/45570/how-do-i-make-serial-work-on-the-raspberry-pi3-pizerow-pi4-or-later-models/45571#45571)
+
+```sudo raspi-config ```
+- Select option 5, "Interfacing Options"
+- Select option P6, "Serial"
+- Select "No" to login shell and "Yes" to enabling serial port
+
+We can test the serial speed with loop back between pins using a direct wire. [Serial Port Loopback](https://di-marco.net/blog/it/2020-06-06-raspberry_pi_3_4_and_0_w_serial_port_usage/).
+
+#### Bauderates
+The following official baud rates work with Raspberry Pi Zero:
+
+    0:       0000000,  # hang up
+    50:      0o000001, # ...
+    75:      0o000002, # ...
+    110:     0o000003, # ...
+    134:     0o000004, # ...
+    150:     0o000005, # ...
+    200:     0o000006, # ...
+    300:     0o000007, # ...
+    600:     0o000010, # ...
+    1200:    0o000011, # ...
+    1800:    0o000012, # ...
+    2400:    0o000013, # ...
+    4800:    0o000014, # ...
+    9600:    0o000015, # ...
+    19200:   0o000016, # ...
+    38400:   0o000017, # ...
+    57600:   0o010001, # ...
+    115200:  0o010002, # works
+    230400:  0o010003, # ...
+    460800:  0o010004, # ...
+    500000:  0o010005, # ...
+    576000:  0o010006, # ...
+    921600:  0o010007, # works
+    1000000: 0o010010, # ...
+    1152000: 0o010011, # works
+    1500000: 0o010012, # ...
+    2000000: 0o010013, # does not work
+    2500000: 0o010014, # ...
+    3000000: 0o010015, # ...
+    3500000: 0o010016, # ...
+    4000000: 0o010017  # ...
+
+#### **Serial on Pi 3 and Pi 0 W**
+
+Pi3 and Pi0 have only two UARTs and one is needed for bluetooth functionality. Pi0W has Bluetooth 4.2 and it does not reach data transfer rates of Pi4. A USB to BLE5.0 dongle works better.
+
+After turning on serial in raspi-config you can furhter modify: ```sudo nano /boot/config.txt```
+
+From turning on serial:
 ```
-Select option 5, "Interfacing Options"
-Select option P6, "Serial" 
-Select "No" to login shell and "Yes" to enabling serial port
+enable_uart=1
+```
+We can disable bluetooth with 
+```
+disable-bt
+```
+#### **PPD Setup**
+PPPD has many options and it will read the once in the file /etc/ppp/options as well as commandline options:
+- *proxyarp* make appear on local ethernet
+- local* dont use modem control lines
+- *lock* get exclusive lock on port
+- *noauth* dont require authentication
+- *debug* debug to syslog
+- *defaultroute* peer becomes gateway (for client)
+- *nodetach* dont detach from terminal
+- *dump* dump all options, then continue
+- *nocrtscts* dont have crtscts hardware
+- *passive* wait until packet received
+- *persist* try to reopen connection
+- *maxfail* 0 do not terminate after failure
+- *holdoff* 1 wait 1 sec before re initialize link, needs persist option
 
-Test serial speed with loop back between GPIO 24 and GPIO 15. Direct wire or 500-700 Ohm resistor.
-https://di-marco.net/blog/it/2020-06-06-raspberry_pi_3_4_and_0_w_serial_port_usage/
+#### **PPD on Server**
+```cp /etc/ppp/options /etc/ppp/options.back```
 
-'''
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-import serial
-test_string = "Test serial port ...".encode('utf-8')
-port_list = ["/dev/ttyAMA0","/dev/ttyAMA0","/dev/ttyS0","/dev/ttyS","/dev/Serial0"]
-baud_list = [300,1200,2400,4800,9600,19200,38400,57600,115200,128000,256000]
-for port in port_list:
-  for baud in baud_list:
-    try:
-        serialPort = serial.Serial(port, baud, timeout = 2)
-        print ("Serial port", port, " ready for test :")
-        bytes_sent = serialPort.write(test_string)
-        print ("Sended", bytes_sent, "byte")
-        loopback = serialPort.read(bytes_sent)
-        if loopback == test_string:
-            print ("Received ",len(loopback), "bytes. Port", port," with ", baud " baud is OK ! \n")
-        else:
-            print ("Received incorrect data:", loopback, "on serial part", port, " with ", baud " baud, "loopback \n")
-        serialPort.close()
-    except IOError:
-        print ("Error on", port,"\n")
-'''    
+Edit the options with:
+```sudo nano /etc/ppp/options```
 
-Maybe '''sudo bash -c "echo 'init_uart_clock=64000000' >> /boot/config.txt"'''
+- ms-dns set it to the same DNS as you can find in /etc/resolv.conv
+- noauth
+- local
+- lock
+- passive
+- silent
+- proxyarp
+- nopix
+- persist
+- maxfail 0
+- holdoff 1
 
-For Pi 3 and Pi 0 W ONLY, decide whether to use the PL011 (which means Bluetooth will be degraded or nonfunctional) or miniUART (your serial connection may not work great but Bluetooth still will work). I have not tested this setup using miniUART, but I assume it would work OK. For PL011, you need to enable one of the device tree overlays that frees PL011 from Bluetooth use e.g. miniuart-bt and disable-bt as described in /boot/overlays/README
+Set iptables and packet forwarding
+```sudo nano /etc/sysctl.conf```
+- net.ipv4.ip_forward=1
 
-It might be necessary: to enable_uart=1 in /boot/config.txt
+Load the kernel settings ```sudo sysctl -p```
 
-With sudo nano /boot/cmdline.txt remove the word phase "console=serial0,115200" or "console=ttyAMA0,115200"
+For packet routing on the server you need the following firewall settings:
 
-Content of /etc/rc.local on server should be:
+```
+sudo iptables -A FORWARD -i ppp+ -j ACCEPT
+sudo iptables -A FORWARD -o ppp+ -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+sudo iptables -A INPUT -i lo -j ACCEPT
+```
+
+You can install netfilter-presient and iptables-persistent and backup IP tables but its faster to add the rules in the rc.local file.
+```
+sudo apt-get install iptables-persistent
+sudo netfilter-persistent save
+sudo netfilter-persistent reload
+```
+
+Content of /etc/rc.local on **server** should be added by:
+
 ```
 echo "Starting pppd..."
 stty -F /dev/serial0 raw
-pppd /dev/serial0 1000000 10.0.5.1:10.0.5.2 proxyarp local noauth debug nodetach dump nocrtscts passive persist maxfail 0 holdoff 1
+sudo pppd /dev/serial0 921600 10.0.0.1:10.0.0.2 &
+sudo sysctl -p
+sudo iptables -A FORWARD -i ppp+ -j ACCEPT
+sudo iptables -A FORWARD -o ppp+ -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+sudo iptables -A INPUT -i lo -j ACCEPT
+```
+#### **PPD on Client**
+
+``` cp /etc/ppp/options /etc/ppp/options.back```
+Edit the server options with:
+```sudo nano /etc/ppp/options```
+
+- usepeerdns
+- noauth
+- local
+- lock
+- defaultroute
+- replacedefaultroute
+- nopix
+- persist
+- maxfail 0
+- holdoff 1
+
+```
+stty -F /dev/serial0 raw
+stty -F /dev/serial0 -a 
+pppd /dev/serial0 921600 10.0.0.2:10.0.0.1
+```
+### **Python program as systemd service**
+We will need the programs for the sensors and bluetooth controlers to automatically start at boot. That is accomplised with systemd services:
+
+```sudo nano /lib/systemd/system/gearVRC.service``` (name of the service is gearVRC in this case)
+```
+[Unit]
+Description=Samsung gearVR controller
+After=multi-user.target
+
+[Service]
+Type=simple
+User=<username>
+Group=<username>
+Restart=always
+ExecStart=/usr/bin/python3 /home/<username>/gearVRC.py -your options
+WorkingDirectory=/home/<username>
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=my_service
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-On client Raspberry pi
+For python progras you need to specify user and group because some of your python extensions might a have been installed into the user's local folder.
+
+You will need to set the file properties to enable their execution:
+
 ```
-sudo pppd /dev/serial0 115200 10.0.0.1:10.0.0.2 proxyarp local noauth debug nodetach dump nocrtscts passive persist maxfail 0 holdoff 1 &
-sudo sysctl -w net.ipv4.ip_forward=1
-sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo chmod 644 /lib/systemd/system/my.service
+chmod +x /home/pi/myprogram.py
+sudo systemctl daemon-reload
+sudo systemctl enable my.service
+sudo systemctl start my.service
+```
+You can observe the progress of your new service:
+```
+journalctl -f -u my_service
 ```
 
-### ZeroMQ
-On both devices
-sudo pip3 install pyzmq
+### **ZeroMQ**          
+On both devices ```sudo pip3 install pyzmq```. We will use ZMQ to communicate between devices and tasks.
 
-### Network Time
+### **Sync Time**
+We will want both raspberry pi to have the same time.
+
+- Simple
+on client execute
+```
+sudo date --set="$(ssh uuser@10.0.0.1 ‘date -u’)"
+```
+This requires that permanent security keys are isntalled.
+
+- NTP for more complex time sync
+
 On both devices
 https://serverfault.com/questions/806274/how-to-set-up-local-ntp-server-without-internet-access-on-ubuntu
 
+```
 sudo apt install chrony
+```
 
-Client /etc/chrony/chrony.conf:
+```
+sudo systemctl enable chronyd
+sudo systemctl status chronyd
+```
 
+**Client** ```/etc/chrony/chrony.conf```:
+
+```
 server 10.0.0.1 iburst
 keyfile /etc/chrony/chrony.keys
-driftfile /var/lib/chrony/chrony.drift
+driftfile /var/lib/chrony/*chrony.drift
 log tracking measurements statistics
 logdir /var/log/chrony
+```
+```
+sudo systemctl restart chronyd
+```
 
-Server /etc/chrony/chrony.conf:
+**Server** ```/etc/chrony/chrony.conf```:
+```
 keyfile /etc/chrony/chrony.keys
 driftfile /var/lib/chrony/chrony.drift
 log tracking measurements statistics
@@ -198,19 +441,27 @@ logdir /var/log/chrony
 local stratum 8
 manual
 allow 10.0.0.0/24 allow 10.0.0.1
-
+```
+```
 sudo systemctl stop chrony
 sudo systemctl start chrony
-
 sudo systemctl status chrony
-
+```
+```
+chronyc activity
 chronyc tracking
+chronyc sources
+```
+```
+timedatectl
+```
 
+### **Speed up boot time**
 
-### Speed up
-On ODrive controlling device only
+For **Motor** ODrive controlling device:
 
-Disable hardware components we dont need:
+Disable hardware components we don't need:
+
 ```
 sudo nano /boot/config.txt
 ```
@@ -219,93 +470,128 @@ Specifically
 # Disable Audio
 dtparam=audio=off
 
-# Disable Splash Screen
+# Comment all optional hardware interfaces
+#dtparam=i2c_arm=on
+#dtparam=i2s=on
+#dtparam=spi=on
+
+# Dont cameras
+camera_auto_detect=0
+
+# Dont detected DSI displays
+display_auto_detect=0
+
+# Disable Splash Screen and Boot Delay
 disable_splash=1
-# Disable boot delay, can no longer actiavte debug
 boot_delay=0
-# Overclock
-force_turbo=1
+
 [all]
-# Don't need wifi
+# Don't need wifi and internal bt. We have dongle
 dtoverlay=disable-wifi
+dtoverlay=disable-bt
 ```
-Now make boot quiet
+
+Now we make the boot quiet
 
 ```
 sudo nano /boot/cmdline.txt
 ```
-add ```loglevel=5 quiet``` after ```console=tty1```
-add ```logo.nologo vt.global_cursor_default=0``` after ```rootwait```
-change ```fsck.mode=skip```
-
-Check out timing with
-
 ```
-systemd-analyze # This shows kerne, user space and services.
-systemd-analyze critical-chain # Shows dependencies
-systemd-analyze blame # Each item
+console=tty1 loglevel=5 quiet root=PARTUUID=44211654-02 rootfstype=ext4 fsck.mode=skip rootwait logo.nologo vt.global_cursor_default=0
 ```
 
-### Speed up by disabling services
+Check out boot timing with
 
-Consider removing the following services
+- ```systemd-analyze``` This shows kernel, user space and services.
+- ```systemd-analyze critical-chain``` This shows what is holding up programs
+- ```systemd-analyze blame``` This lists execution time of all programs started at boot
 
-#### Verified to work
+#### **Boot Results**
+Pi0W2 multiuser target after time in userspace
+- [1] 16.9 secs to user space on Raspian Light
+- [2] 14.23 boot/config.txt and cmdline.txt changes
+- [3] 14.11 disable raspi-config.service
+- [4] 13.88 disable rpi-eeprom-update.service
+- [5] 9.647 changed to network manager from dhcpd
+- [6] 7.16 in client as configured below, no bt and no wifi
 
-TODO Should look into systemd-timesyncd.service because don't care about time ```sudo systemctl disable systemd-timesyncd.service```
-Should look into fschk-root as we dont need system to check drives
-Should look into remount fs as we dont need access to boot device once verything is running
+Server: 17.47 seconds to finish startup
+
+Client: 11.71 seconds to finihs startup
+
+### **Speed up Boot by Disabling Services**
+List the services
+- ```systemctl list-unit-files --type=service```
+- ```systemctl status```
+- ```sudo service --status-all```
+- ```sudo rcconf```
+
+#### **Server**
+Following services are running
+- avahi-daemon (Zeronconf networking protocol)
+- bluetooth
+- chrony
+- cron
+- dbus (Inter process communication)
+- dphys-swapfile
+- fake-hwclock
+- kmod (kernel modules)
+- networking
+- plymouth (boot graphical experience)
+- plymouth-log
+- procps (syste processes and routines)
+- raspi-config (configuration)
+- rng-tools-debin (random number tools)
+- rsyslog
+- ssh
+- triggerhappy (hotkeydaemon)
+- udev (user space device manager)
+
+#### **Client**
 
 ```
-# Configure once, then leave as is
+# User Boot Experience, does not impact boot times
+sudo systemctl disable plymoth.service
+sudo systemctl disable plymoth-log.service
+# Configure raspi, does not impact boot times
 sudo systemctl disable raspi-config.service
-# Run same program, will not need to adjust to programs booting by user
+# Swapfile does not impact boot tims
 sudo systemctl disable dphys-swapfile.service 
-# Don't care about keyboard
+# Don't care about keyboard, slight impact on boot times
 sudo systemctl disable keyboard-setup.service
-# Will not want to flash EEPROM
+sudo systemctl disable triggerhappy
+# Will not want to flash EEPROM, does not affect boot times
 sudo systemctl disable rpi-eeprom-update.service
-# 3.0 Kernel 10.8 User **6.2** Target reached
-# Don't need network at least no the items related to wlan0 and eth0
+# Don't need network wlan and eth0
 sudo systemctl disable NetworkManager.service
 sudo systemctl disable wpa_supplicant.service
 sudo systemctl disable ModemManager.service
-# 3.0 Kernel 11.3 User **5.4** Target reached 
 # Don't care about printing
 sudo systemctl disable cups.service
 sudo systemctl disable cups-browsed.service
-# 2.9 Kernel 11.5 User **5.0** Target reached 
 ```
+Current **Client** boot time is:
 
-#### Working on
+Startup finished in 3.817s (kernel) + 7.738s (userspace) = 11.555s
+multi-user.target reached after 7.076s in userspace
 
-e2scrub_reap.service cleans up unused space on ext4 file systems. It is not essential.
-glamor-test.service graphics driver for XWindows
-user@1000.service  responsible for managing user-level services for a specific user with UID (User ID) of 1000. Is not essential
-systemctl disable avahi-daemon.service that provides network service discovery on local networks, not essential but likely bluetooth needs it
-modprobe@drm.service loads the drm (Direct Rendering Manager) kernel module during system startup, not sure if any additions are loeaded 
-
-## Autologin from windows/max/linux to Raspian
+## **Auto Login to Raspian**
 
 On client, e.g. Windows Powershell
 ```
 ssh-keygen
+ssh-copy-id username@destination.host
 ```
-On Raspberry Pi:
-```
-sudo nano .ssh/authorized_keys
-```
-copy content of id_rsa.pub into file
 
-## Remove CR from files
+## **Remove CR from files**
 When you copy paste from windows into ssh terminal, you might insert CR-LF as line terminator. You only want LF. You can strip them in text files with:
 ```
 sed 's/\r$//' in.txt > out.txt
 ```
 
-## Bluetooth
+## **Bluetooth**
 
-To permanently install devices you need to manually pair and trust them 
+To permanently install devices you need to manually pair and trust them.
 
 ```
 bluetoothctl 
@@ -324,172 +610,7 @@ connect 00:00:00:33:9B:58
 If you modify wireless connection or management, it might be necessary to repair the device.
 When a device is scanning 
 
-### Bluetooth Event Handling
-On my setup:
-- event0  gamepad
-- event1  gamepad
-- event2  gamepad
-- event3  regular
-- js0     gamepad
-- mice    regular
-- mouse0  gamepad
-
-mouse: Umido ESoul DH2 Mouse
-```
-REL_X -7 (left) ... +7 (right) 
-REL_Y -7   (up) ... +7    (up)
-BTN_LEFT       pushed value 1, released 0, large front button and also button A
-```
-
-keyboard: Umido ESoul DH2 Keyboard
-```
-KEY_ESC        pushed value 1, continuous 2, released 0 Second button and button B
-KEY_VOLUMEUP   pushed value 1, continuous 2, released 0 Button C
-KEY_VOLUMEDOWN pushed value 1, continuous 2, released 0 Button D
-```
-
-### Initial Scanning for Devices and Setting up Monitoring
-
-```
-# Keep  track of bluetooth device
-class BTDevice(object):
-    def __init__(self, name="", path="", device=None, poller=None, timeout=5):
-        self.name    = name
-        self.path    = path
-        self.device  = device
-        self.poller  = poller    
-        self.timeout = timeout  # poller timeout in milliseconds
-
-# Input devices to be watched
-# Keypad and Joystick
-input_pollInterval = 0.001 # how long to wait for next poll
-joystick = BTDevice(name="Umido ESoul DH2 Mouse",    poller=select.poll(), timeout = 5)
-keyboard = BTDevice(name="Umido ESoul DH2 Keyboard", poller=select.poll(), timeout = 5)
-
-# UDEV Monitor
-# Connection and disconnection monitor
-monitor_pollInterval = 1 
-monitorPoller  = select.poll()
-context =  pyudev.Context()
-monitor = pyudev.Monitor.from_netlink(context)
-monitor.filter_by(subsystem='input')
-monitor.start()
-monitorPoller.register(monitor, 
-                       select.POLLIN + select.POLLPRI + select.POLLHUP 
-                       + select.POLLRDHUP + select.POLLNVAL + select.POLLERR )
-                       # register all events except ready for output
-
-# Logging
-logging.basicConfig(level=logging.INFO) # options are: DEBUG, INFO, ERROR, WARNING
-logger = logging.getLogger("GamePad")
-
-# Initial scan
-udevices = context.list_devices(subsystem='input')                  # list all input devices
-for udev in udevices:
-    if udev.device_node:                                            # only interested in devices with a device node
-        if 'event' in udev.device_node:                             # only interested in event devices
-            evdevice = InputDevice(udev.device_node)                # create event device
-            if joystick.name == evdevice.name:                      # check if desired joystick was added          
-                joystick.path = evdevice.path                       # keep track of path
-                joystick.device = evdevice                          #
-                joystick.poller.register(evdevice, select.POLLIN)   # poller
-                logger.log(logging.INFO, "Observing Joystick {} at {} with {}.".format(evdevice.name,evdevice.path,evdevice.phys))
-            elif keyboard.name == evdevice.name:                    # check if desired keyboard was added
-                keyboard.path = evdevice.path                       # keep track of path
-                keyboard.device = evdevice
-                keyboard.poller.register(evdevice, select.POLLIN)
-                logger.log(logging.INFO, "Observing Keyboard {} at {} with {}.".format(evdevice.name,evdevice.path,evdevice.phys))
-            else:
-                logger.log(logging.INFO, "System Event Device found {} at {} with {}. Not observing.".format(evdevice.name,evdevice.path,evdevice.phys))
-        else:
-            logger.log(logging.INFO, "System Input Device found {} with type ({}). Not observing.".format(udev.device_node, udev.device_type))
-```
-
-### Check for periodic device Addition or Removal
-```
-fdVsEvent = monitorPoller.poll(10)                          # timeout in milliseconds
-for descriptor, event in fdVsEvent:
-    logger.log(logging.DEBUG, "Monitor Descriptor: {} Event: {}".format(descriptor,event))
-    if descriptor == monitor.fileno(): 
-        for udev in iter(functools.partial(monitor.poll, 0), None):
-            if udev.device_node:                            # we're only interested in devices that have a device node
-                # Deal with Device Additions
-                # ##########################
-                if udev.action == 'add':
-                    if 'event' in udev.device_node:         # only interested in event devices
-                        evdevice = InputDevice(udev.device_node)    # create event device
-                        if joystick.name == evdevice.name:  # check if desired joystick was added          
-                            joystick.path = evdevice.path   # keep track of path
-                            joystick.device = evdevice         
-                            joystick.poller.register(evdevice, select.POLLIN)
-                            logger.log(logging.INFO, "Observing Joystick {} at {} with {}.".format(evdevice.name,evdevice.path,evdevice.phys))
-                        elif keyboard.name == evdevice.name: # check if desired keyboard was added
-                            keyboard.path = evdevice.path   # keep track of path
-                            keyboard.device = evdevice
-                            keyboard.poller.register(evdevice, select.POLLIN)
-                            logger.log(logging.INFO, "Observing Keyboard {} at {} with {}.".format(evdevice.name,evdevice.path,evdevice.phys))
-                        else:
-                            logger.log(logging.INFO, "System Event Device found {} at {} with {}. Not observing.".format(evdevice.name,evdevice.path,evdevice.phys))
-                    else:
-                        logger.log(logging.INFO, "System Input Device found {} with type ({}). Not observing.".format(udev.device_node, udev.device_type))
-                # Deal with Device Removals
-                # ##########################
-                elif udev.action == 'remove':
-                    # check if joystick was removed
-                    if udev.device_node == joystick.path:
-                        if joystick.device is not None:
-                            joystick.poller.unregister(joystick.device)
-                        joystick.path = ""
-                        joystick.device = None
-                        logger.log(logging.INFO, "Joystick {} removed.".format(joystick.name))
-                    # check if keybaord was removed
-                    elif udev.device_node == keyboard.path:
-                        logger.log(logging.INFO, "Keyboard {} removed.".format(keyboard.name))
-                        if keyboard.device is not None:
-                            keyboard.poller.unregister(keyboard.device)
-                        keyboard.path = ""
-                        keyboard.device = None
-                    else:
-                        logger.log(logging.INFO, "Device {} removed.".format(udev.device_node))
-                else:
-                    logger.log(logging.INFO, "Unknown Action {} from {}.".format(udev.action, udev.device_node))
-
-```
-
-### Check for Input Events
-```
-fdVsEvent = joystick.poller.poll(joystick.timeout)
-for descriptor, event in fdVsEvent:
-    logger.log(logging.DEBUG, "Joystick Descriptor: {} Event: {}".format(descriptor, event))
-    if event == select.POLLIN:
-        if joystick.device is not None:
-            for e in joystick.device.read():
-                # Convert code, type in names
-                print("Type: {}, Code: {}, Value: {}".format(ecodes.EV[e.type], ecodes.bytype[e.type][e.code], e.value))
-                
-                # Here interpret the event and call appropriate action
-
-    elif event & select.POLLHUP:
-        logger.log(logging.INFO, "Joystick disconnected.")
-        joystick.poller.unregister(joystick.device)
-        joystick.device = None
-fdVsEvent = keyboard.poller.poll(keyboard.timeout)          # timeout in milliseconds
-for descriptor, event in fdVsEvent:
-    logger.log(logging.DEBUG, "Keyboard Descriptor: {} Event: {}".format(descriptor,event))
-    if event == select.POLLIN:
-        if keyboard.device is not None:
-            for e in keyboard.device.read():
-                print("Type: {}, Code: {}, Value: {}".format(ecodes.EV[e.type], ecodes.bytype[e.type][e.code], e.value))
-
-                # Here interpret the event and call appropriate action
-
-    elif event & select.POLLHUP:
-        logger.log(logging.INFO, "Keyboard disconnected.")
-        keyboard.poller.unregister(keyboard.device)
-        keyboard.device = None
-```
-
-## Tankdrive
+## **Tankdrive**
 Example tank drive where there are two wheels or treads that rotate at different speed. The average speed is the vehicle speed but difference between left and righ wheels will roate the vehicle.
 
 ```
