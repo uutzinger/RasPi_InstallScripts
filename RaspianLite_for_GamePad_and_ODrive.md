@@ -25,10 +25,12 @@ Networking over wireless is not needed and we will use point to point ethernet o
     - Camera optional
 
 ## Table of Contents
+
 - [Raspberry Pi "Lite" for Motor Control](#raspberry-pi--lite--for-motor-control)
+  * [Table of Contents](#table-of-contents)
   * [**General Configuration**](#--general-configuration--)
   * [**Install Packages**](#--install-packages--)
-    + [Basics](#basics)
+    + [**Basics**](#--basics--)
     + [**PySerial**](#--pyserial--)
     + [**ODrive Tool**](#--odrive-tool--)
     + [**Other Packages**](#--other-packages--)
@@ -37,7 +39,7 @@ Networking over wireless is not needed and we will use point to point ethernet o
     + [**Accelerometer**](#--accelerometer--)
     + [**Neo Pixels**](#--neo-pixels--)
     + [**PPP**](#--ppp--)
-      - [Bauderates](#bauderates)
+      - [**Bauderates**](#--bauderates--)
       - [**Serial on Pi 3 and Pi 0 W**](#--serial-on-pi-3-and-pi-0-w--)
       - [**PPD Setup**](#--ppd-setup--)
       - [**PPD on Server**](#--ppd-on-server--)
@@ -57,6 +59,7 @@ Networking over wireless is not needed and we will use point to point ethernet o
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
+
 ## **General Configuration**
 
 1) Download Raspian Imager https://downloads.raspberrypi.org/imager/imager_latest.exe
@@ -69,7 +72,7 @@ If you have troubles downloading or updating the raspberry pi, check that your t
 
 ## **Install Packages**
 
-### Basics
+### **Basics**
 ```
 sudo apt-get update
 sudo apt-get full-upgrade
@@ -244,7 +247,7 @@ We will attempt local network over serial RX/TX (pin 8/10). This will work betwe
 
 We can test the serial speed with loop back between pins using a direct wire. [Serial Port Loopback](https://di-marco.net/blog/it/2020-06-06-raspberry_pi_3_4_and_0_w_serial_port_usage/).
 
-#### Bauderates
+#### **Bauderates**
 The following official baud rates work with Raspberry Pi Zero:
 
     0:       0000000,  # hang up
