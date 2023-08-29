@@ -24,6 +24,38 @@ Networking over wireless is not needed and we will use point to point ethernet o
     - Level Shifter 3.5V to 5V (for neopixel)
     - Camera optional
 
+## Table of Contents
+- [Raspberry Pi "Lite" for Motor Control](#raspberry-pi--lite--for-motor-control)
+  * [**General Configuration**](#--general-configuration--)
+  * [**Install Packages**](#--install-packages--)
+    + [Basics](#basics)
+    + [**PySerial**](#--pyserial--)
+    + [**ODrive Tool**](#--odrive-tool--)
+    + [**Other Packages**](#--other-packages--)
+    + [**Install Desktop PIXEL**](#--install-desktop-pixel--)
+    + [**Realtime Clock**](#--realtime-clock--)
+    + [**Accelerometer**](#--accelerometer--)
+    + [**Neo Pixels**](#--neo-pixels--)
+    + [**PPP**](#--ppp--)
+      - [Bauderates](#bauderates)
+      - [**Serial on Pi 3 and Pi 0 W**](#--serial-on-pi-3-and-pi-0-w--)
+      - [**PPD Setup**](#--ppd-setup--)
+      - [**PPD on Server**](#--ppd-on-server--)
+      - [**PPD on Client**](#--ppd-on-client--)
+    + [**Python program as systemd service**](#--python-program-as-systemd-service--)
+    + [**ZeroMQ**](#--zeromq--)
+    + [**Sync Time**](#--sync-time--)
+    + [**Speed up boot time**](#--speed-up-boot-time--)
+      - [**Boot Results**](#--boot-results--)
+    + [**Speed up Boot by Disabling Services**](#--speed-up-boot-by-disabling-services--)
+      - [**Server**](#--server--)
+      - [**Client**](#--client--)
+  * [**Auto Login to Raspian**](#--auto-login-to-raspian--)
+  * [**Remove CR from files**](#--remove-cr-from-files--)
+  * [**Bluetooth**](#--bluetooth--)
+  * [**Tankdrive**](#--tankdrive--)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## **General Configuration**
 
